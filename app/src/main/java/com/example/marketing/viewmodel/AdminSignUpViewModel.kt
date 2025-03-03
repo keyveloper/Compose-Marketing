@@ -44,6 +44,7 @@ class AdminSignUpViewModel @Inject constructor(
         viewModelScope.launch {
             _signUpState.value = SignUpAdminState.Loading
             try {
+                Log.i("adminSignUpViewModel", "sign up start : ${requestModel}")
                 val createdId = adminRepository.signUp(requestModel)
 
                 viewModelScope.launch(Dispatchers.Main) {

@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,13 +28,12 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.marketing.dto.user.request.SignUpAdmin
 import com.example.marketing.item.SignUpFormItem
+import com.example.marketing.state.SignUpAdminState
 import com.example.marketing.ui.component.SignUpForm
 import com.example.marketing.viewmodel.AdminSignUpViewModel
-import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +45,14 @@ fun AdminSignUpScreen(
     val loginId by adminViewModel.loginId.collectAsState()
     val password by adminViewModel.password.collectAsState()
 
+    LaunchedEffect(key1 = signUpState) {
+        if (signUpState is SignUpAdminState.Success) {
+            navController.navigate("auth-home") {
+                // 기존 백스택을 제거하고 싶으면 popUpTo 등의 옵션 사용 가능
+                popUpTo("adminSignUp") { inclusive = true }
+            }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
