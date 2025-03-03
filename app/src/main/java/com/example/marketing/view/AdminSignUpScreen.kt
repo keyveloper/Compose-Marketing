@@ -1,6 +1,5 @@
 package com.example.marketing.view
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -13,35 +12,38 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.marketing.dto.user.request.SignUpAdmin
 import com.example.marketing.item.SignUpFormItem
 import com.example.marketing.ui.component.SignUpForm
-import com.example.marketing.viewmodel.AdminViewModel
+import com.example.marketing.viewmodel.AdminSignUpViewModel
+import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminSignUpScreen(
-    viewModel: AdminViewModel = hiltViewModel(),
+    adminViewModel: AdminSignUpViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    val newLoginId: String
-    val newPassword: String
+    val signUpState by adminViewModel.signUpState.collectAsState()
+    val loginId by adminViewModel.loginId.collectAsState()
+    val password by adminViewModel.password.collectAsState()
 
 
     Surface(
@@ -84,17 +86,22 @@ fun AdminSignUpScreen(
             Box(modifier = Modifier.padding(adjustedPadding)) {
                 SignUpForm(
                     title = "Welcome My World!",
-                    toNext = {},
+                    toSubmit = { adminViewModel.signUp(
+                        SignUpAdmin(
+                            loginId = loginId,
+                            password = password
+                        )
+                    ) },
                     items = listOf(
                         SignUpFormItem(
                             label = "로그인 ID",
-                            onValueChange = {},
+                            onValueChange = { adminViewModel.updatedLoginId(it) },
                             placeholder = "이름을 입력해 주세요",
                             value = ""
                         ),
                         SignUpFormItem(
                             label = "비밀번호",
-                            onValueChange = {},
+                            onValueChange = { adminViewModel.updatedPassword(it) },
                             placeholder = "비밀번호 조합: ",
                             value = ""
                         )

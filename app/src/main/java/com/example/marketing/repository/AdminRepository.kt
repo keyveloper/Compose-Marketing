@@ -9,11 +9,13 @@ class AdminRepository @Inject constructor(
     private val adminApi: AdminApi,
 ){
 
-    suspend fun signUp(requestModel: SignUpAdmin) {
+    suspend fun signUp(requestModel: SignUpAdmin): Long {
         val response = adminApi.signUp(requestModel)
 
-        if (response.frontErrorCode != 20000) {
+        return if (response.frontErrorCode != 20000) {
             throw BusinessException(response.errorMessage)
+        } else {
+            response.createdId
         }
     }
 }

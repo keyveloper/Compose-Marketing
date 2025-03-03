@@ -26,7 +26,7 @@ import com.example.marketing.item.SignUpFormItem
 @Composable
 fun SignUpForm(
     title: String,
-    toNext: () -> Unit,
+    toSubmit: () -> Unit,
     items: List<SignUpFormItem>
 ) {
     Column(
@@ -69,7 +69,7 @@ fun SignUpForm(
         }
         // to Next button
         Button(
-            onClick = toNext,
+            onClick = toSubmit,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(55.dp),
