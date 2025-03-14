@@ -8,6 +8,8 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 
+    // for kotlin 2.x up vertsion 추가
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 kapt {
@@ -82,9 +84,9 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation("com.google.dagger:hilt-android:2.52")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0") // integrate Hilt and Navigation
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0") // integrate Hilt and Navigation
 
 
     // ktor
@@ -98,14 +100,14 @@ dependencies {
 
 
     // viewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
 
     // Data Source
-    implementation("androidx.datastore:datastore:1.1.1")
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation("androidx.datastore:datastore:1.1.3")
+    implementation("androidx.datastore:datastore-preferences:1.1.3")
 
     // navigation
-    implementation("androidx.navigation:navigation-compose:2.7.3") // 최신 버전
+    implementation("androidx.navigation:navigation-compose:2.8.9") // 최신 버전
 
     // coil for img
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")

@@ -7,10 +7,11 @@ import androidx.compose.ui.unit.*
 import androidx.compose.material3.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.draw.*
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.layout.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.*
-import coil3.compose.AsyncImage
+import com.example.marketing.R
 import com.example.marketing.enum.ChannelIcon
 import com.example.marketing.enum.ChannelType
 import com.example.marketing.enum.ReviewIcon
@@ -28,14 +29,21 @@ fun AdvertisementThumbnail(
             .clickable { onClick(item.advertisementId) }
     ) {
 
-        // Image
-        AsyncImage(
-            model = item.thumbnailImageUrl,
-            contentDescription ="${item.itemName}'s thumbnail image",
+        // Image tmp -> should change to coil
+        Card(
             modifier = Modifier
-                .size(width = 170.dp, height = 180.dp)
-                .clip(shape = RoundedCornerShape(16.dp))
-        )
+                .size(width = 170.dp, height = 180.dp),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.test),
+                contentDescription ="${item.itemName}'s thumbnail image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(13.dp))
 
@@ -62,7 +70,9 @@ fun AdvertisementThumbnail(
             val channelIcon = ChannelIcon.fromCode(item.channelType.code)
             Icon(
                 painter = painterResource(id = channelIcon!!.iconRes),
-                contentDescription = channelIcon.description
+                contentDescription = channelIcon.description,
+                modifier = Modifier.size(24.dp),
+                tint = Color.Unspecified
             )
             Spacer(modifier = Modifier.width(7.dp))
             Text(
@@ -81,6 +91,7 @@ fun AdvertisementThumbnail(
             Icon(
                 imageVector = reviewIcon!!.icon,
                 contentDescription = reviewIcon.description,
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(7.dp))
             Text(
@@ -98,10 +109,10 @@ fun PreviewAdvertisementThumbnail() {
     AdvertisementThumbnail(
         item =  AdvertisementThumbnailItem(
             advertisementId = 1L,
-            thumbnailImageUrl = "https://via.placeholder.com/170x180.png",
+            thumbnailImageUrl = "",
             title = "Special Discount",
             itemName = "Product X",
-            channelType = ChannelType.BLOGGER,
+            channelType = ChannelType.YOUTUBER,
             reviewType = ReviewType.VISITED
         ),
         onClick = {}
