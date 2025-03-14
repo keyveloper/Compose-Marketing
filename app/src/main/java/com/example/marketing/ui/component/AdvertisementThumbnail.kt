@@ -20,12 +20,11 @@ import com.example.marketing.enum.ReviewType
 @Composable
 fun AdvertisementThumbnail(
     item: AdvertisementThumbnailItem,
+    modifier: Modifier = Modifier,
     onClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
             .clickable { onClick(item.advertisementId) }
     ) {
 
