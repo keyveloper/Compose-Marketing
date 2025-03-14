@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.utils.IMPLEMENTATION
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -76,6 +78,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Icon
+    implementation(libs.androidx.material.icons.extended)
+
     // Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
@@ -103,7 +108,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.3") // 최신 버전
 
     // coil for img
-    implementation("io.coil-kt.coil3:coil-compose:3.0.3")
+    implementation("io.coil-kt.coil3:coil-compose:3.1.0")
 
     // jwt token storage (jetpack security)
     implementation("androidx.security:security-crypto:1.1.0-alpha06")

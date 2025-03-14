@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.marketing.item.SignUpFormItem
@@ -62,7 +64,10 @@ fun SignUpForm(
                 value = field.value,
                 onValueChange = field.onValueChange,
                 placeholder = { Text(field.placeholder) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation =
+                if (field.needSecret) PasswordVisualTransformation()
+                    else VisualTransformation.None
             )
 
             Spacer(modifier = Modifier.height(18.dp))

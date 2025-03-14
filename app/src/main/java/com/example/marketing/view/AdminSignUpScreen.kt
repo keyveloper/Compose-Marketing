@@ -105,13 +105,15 @@ fun AdminSignUpScreen(
                             label = "로그인 ID",
                             onValueChange = { adminViewModel.updatedLoginId(it) },
                             placeholder = "이름을 입력해 주세요",
-                            value = ""
+                            value = loginId,
+                            needSecret = false
                         ),
                         SignUpFormItem(
                             label = "비밀번호",
                             onValueChange = { adminViewModel.updatedPassword(it) },
                             placeholder = "비밀번호 조합: ",
-                            value = ""
+                            value = password,
+                            needSecret = true
                         )
                     )
                 )

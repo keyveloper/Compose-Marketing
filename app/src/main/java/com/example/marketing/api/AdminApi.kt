@@ -1,6 +1,5 @@
 package com.example.marketing.api
 
-import com.example.marketing.domain.Admin
 import com.example.marketing.dto.user.request.LoginAdmin
 import com.example.marketing.dto.user.request.LoginAdminRequest
 import com.example.marketing.dto.user.request.MakeNewAdminRequest
@@ -24,6 +23,9 @@ class AdminApi @Inject constructor(
     }
     
     suspend fun login(requestModel: LoginAdmin): LoginAdminResponse {
-        val request = LoginAdminRequest
+        val request = LoginAdminRequest.of(requestModel)
+        return client.post("/test/login/admin") {
+            setBody(request)
+        }.body()
     }
 }
