@@ -13,8 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.marketing.navigation.AuthNavHost
 import com.example.marketing.ui.theme.MarketingTheme
+import com.example.marketing.view.AdvertisementDetailScreen
 import com.example.marketing.view.MainScreen
 import com.example.marketing.view.ScaffoldTestScreen
+import com.example.marketing.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +26,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MarketingTheme {
-                MainScreen()
+                AdvertisementDetailScreen()
             }
         }
     }

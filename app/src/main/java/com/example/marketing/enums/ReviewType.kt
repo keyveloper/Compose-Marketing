@@ -1,4 +1,4 @@
-package com.example.marketing.enum
+package com.example.marketing.enums
 
 
 enum class ReviewType(val code: Int) {

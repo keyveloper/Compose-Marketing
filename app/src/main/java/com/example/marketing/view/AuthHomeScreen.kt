@@ -16,7 +16,7 @@ import androidx.navigation.NavController
 // select user signup/login
 
 @Composable
-fun AuthHomeViewModel(
+fun AuthHomeScreen(
     navController: NavController
 ) {
 

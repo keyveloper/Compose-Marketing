@@ -12,10 +12,10 @@ import androidx.compose.ui.layout.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.*
 import com.example.marketing.R
-import com.example.marketing.enum.ChannelIcon
-import com.example.marketing.enum.ChannelType
-import com.example.marketing.enum.ReviewIcon
-import com.example.marketing.enum.ReviewType
+import com.example.marketing.enums.ChannelIcon
+import com.example.marketing.enums.ChannelType
+import com.example.marketing.enums.ReviewIcon
+import com.example.marketing.enums.ReviewType
 
 @Composable
 fun AdvertisementThumbnail(

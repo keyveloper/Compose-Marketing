@@ -1,4 +1,4 @@
-package com.example.marketing.enum
+package com.example.marketing.enums
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.AutoMirrored

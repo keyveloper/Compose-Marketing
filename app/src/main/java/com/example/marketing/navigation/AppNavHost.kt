@@ -9,7 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.marketing.view.AdminLoginScreen
 import com.example.marketing.view.AdminSignUpScreen
-import com.example.marketing.view.AuthHomeViewModel
+import com.example.marketing.view.AuthHomeScreen
 
 @Composable
 fun AuthNavHost() {
@@ -23,7 +23,7 @@ fun AuthNavHost() {
 
         navigation(startDestination = "auth-admin-sign-up", route = "auth-graph") {
             composable("auth-home") {
-                AuthHomeViewModel(navController)
+                AuthHomeScreen(navController)
             }
 
             composable("auth-influencer") {

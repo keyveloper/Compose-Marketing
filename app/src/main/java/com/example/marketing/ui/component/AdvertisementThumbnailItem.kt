@@ -1,7 +1,7 @@
 package com.example.marketing.ui.component
 
-import com.example.marketing.enum.ChannelType
-import com.example.marketing.enum.ReviewType
+import com.example.marketing.enums.ChannelType
+import com.example.marketing.enums.ReviewType
 
 data class AdvertisementThumbnailItem(
     val advertisementId: Long,
