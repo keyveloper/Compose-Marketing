@@ -2,45 +2,43 @@ package com.example.marketing.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.*
-import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.ui.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.*
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import com.example.marketing.enums.ChannelType
-import com.example.marketing.enums.ReviewType
-import com.example.marketing.ui.component.AdvertisementThumbnail
-import com.example.marketing.ui.component.AdvertisementThumbnailItem
-import com.example.marketing.ui.component.MainBottomBar
-import com.example.marketing.ui.component.MainTopBar
-import com.example.marketing.viewmodel.MainViewModel
+import com.example.marketing.viewmodel.AdvertisementDetailViewModel
 
 @Composable
-fun AdvertisementDetailScreen() {
+fun AdvertisementDetailScreen(
+    advertisementViewModel: AdvertisementDetailViewModel = hiltViewModel(),
+    id: Long
+) {
+    // 시작시 할거
+    LaunchedEffect(id) {
+        // 1. id set
+        advertisementViewModel.init(id)
+
+        // 2. fetch advertisement
+    }
     val scrollState = rememberScrollState()
+
 
     Surface(
         modifier = Modifier
