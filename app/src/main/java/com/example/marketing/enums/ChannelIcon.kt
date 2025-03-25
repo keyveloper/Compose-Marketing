@@ -4,7 +4,7 @@ import com.example.marketing.R
 
 enum class ChannelIcon(
     val code: Int,
-    val iconRes: Int,
+    val painterId: Int,
     val description: String,
     val title: String) {
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.ChannelType
 import com.example.marketing.enums.ReviewType
 import com.example.marketing.ui.component.AdvertisementThumbnail
@@ -22,29 +23,46 @@ import com.example.marketing.viewmodel.MainViewModel
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel
 ) {
     // status
     // HOME, LOCATION, FOLLOW, MY_PROFILE
-    Scaffold(
-        topBar = { MainTopBar() },
-        bottomBar = { MainBottomBar() }
-    ) { innerPadding ->
-        HomeScreen(
-            innerPadding = PaddingValues(
-                start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-                top = innerPadding.calculateTopPadding(),
-                end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                bottom = innerPadding.calculateBottomPadding()
-            )
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .background(Color.White)
+            .padding(top = 24.dp, bottom = 50.dp)
+    ) {
+        MainTopBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(MaterialTheme.colorScheme.secondary)
+                .align(Alignment.TopCenter)
+        )
+
+        HomeScreen( // 순서대로 안하면 topBar를 덮어버림
+            modifier = Modifier
+                .padding(
+                    top = 56.dp,
+                    bottom = 56.dp
+                )
+                .fillMaxSize()
+                .background(Color.LightGray)
+            ,
+        )
+
+        MainBottomBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .align(Alignment.BottomCenter)
+                .height(56.dp)
         )
     }
-
 }
 
 
 @Preview
 @Composable
 fun PreviewMyMainScreen() {
-    MainScreen(MainViewModel())
+    MainScreen()
 }

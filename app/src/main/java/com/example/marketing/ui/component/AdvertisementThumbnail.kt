@@ -68,7 +68,7 @@ fun AdvertisementThumbnail(
         ) {
             val channelIcon = ChannelIcon.fromCode(item.channelType.code)
             Icon(
-                painter = painterResource(id = channelIcon!!.iconRes),
+                painter = painterResource(id = channelIcon!!.painterId),
                 contentDescription = channelIcon.description,
                 modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified
@@ -88,7 +88,7 @@ fun AdvertisementThumbnail(
         ) {
             val reviewIcon = ReviewIcon.fromCode(item.reviewType.code)
             Icon(
-                imageVector = reviewIcon!!.icon,
+                imageVector = reviewIcon!!.iconVector,
                 contentDescription = reviewIcon.description,
                 modifier = Modifier.size(24.dp)
             )

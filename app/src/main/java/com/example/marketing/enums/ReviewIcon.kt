@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class ReviewIcon(
     val code: Int,
-    val icon: ImageVector,
+    val iconVector: ImageVector,
     val description: String,
     val title: String
 ) {

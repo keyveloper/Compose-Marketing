@@ -16,13 +16,20 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.ui.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
+import com.example.marketing.enums.ChannelIcon
+import com.example.marketing.enums.ChannelType
+import com.example.marketing.enums.ReviewIcon
+import com.example.marketing.enums.ReviewType
 import com.example.marketing.viewmodel.AdvertisementDetailViewModel
 
 @Composable
@@ -30,15 +37,47 @@ fun AdvertisementDetailScreen(
     advertisementViewModel: AdvertisementDetailViewModel = hiltViewModel(),
     id: Long
 ) {
-    // 시작시 할거
+    // Screen 시작시
     LaunchedEffect(id) {
-        // 1. id set
         advertisementViewModel.init(id)
-
-        // 2. fetch advertisement
     }
+
+    val stringBuilder = StringBuilder()
+
+    val title by advertisementViewModel.title.collectAsState()
+    val reviewType by advertisementViewModel.reviewType.collectAsState()
+    val channelType by advertisementViewModel.channelType.collectAsState()
+    val recruitmentNumber by advertisementViewModel.recruitmentNumber.collectAsState()
+    val itemName by advertisementViewModel.itemName.collectAsState()
+    val recruitmentStartAt by advertisementViewModel.recruitmentStartAt.collectAsState()
+    val recruitmentEndAt by advertisementViewModel.recruitmentEndAt.collectAsState()
+    val announcementAt by advertisementViewModel.announcementAt.collectAsState()
+    val reviewStartAt by advertisementViewModel.reviewStartAt.collectAsState()
+    val reviewEndAt by advertisementViewModel.reviewEndAt.collectAsState()
+    val endAt by advertisementViewModel.endAt.collectAsState()
+    val siteUrl by advertisementViewModel.siteUrl.collectAsState()
+    val itemInfo by advertisementViewModel.itemInfo.collectAsState()
+    val createdAt by advertisementViewModel.createdAt.collectAsState()
+    val updatedAt by advertisementViewModel.updatedAt.collectAsState()
+    val city by advertisementViewModel.city.collectAsState()
+    val district by advertisementViewModel.district.collectAsState()
     val scrollState = rememberScrollState()
 
+    val channelIcon: @Composable () -> Unit = {
+        Icon(
+            painter = painterResource(id = ChannelIcon.fromCode(channelType.code)!!.painterId),
+            contentDescription = "Channel type icon"
+        )
+    }
+
+    val reviewIcon: @Composable () -> Unit = {
+        Icon(
+            imageVector = ReviewIcon.fromCode(reviewType.code)!!.iconVector ,
+            contentDescription = "review type icon"
+        )
+        Spacer(Modifier.width(10.dp))
+        Text("Review Type")
+    }
 
     Surface(
         modifier = Modifier
@@ -53,8 +92,8 @@ fun AdvertisementDetailScreen(
             Box(modifier = Modifier.fillMaxWidth()) {
                 // 배경 이미지
                 AsyncImage(
-                    model = "https://example.com/food_image.jpg",
-                    contentDescription = "Top Image",
+                    model = siteUrl ?: "",
+                    contentDescription = "Item Top Image",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
@@ -96,40 +135,34 @@ fun AdvertisementDetailScreen(
             }
             // (2) 제목 (Advertisement Title)
             Text(
-                text = "Advertisement Title",
+                text = title.ifEmpty { "Advertisement Title" },
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Type Infos with icons
+            // (3) Type Infos with icons
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Campaign,
-                    contentDescription = "Channel type icon"
-                )
+                channelIcon()
                 Spacer(Modifier.width(10.dp))
-                Text("Channel Type")
+                Text(channelType.name)
 
                 Spacer(Modifier.width(10.dp))
 
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = "review type icon"
-                )
+                reviewIcon()
                 Spacer(Modifier.width(10.dp))
-                Text("Review Type")
+                Text(reviewType.name)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            //  item info box
+            //  (4) item info box
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -154,10 +187,10 @@ fun AdvertisementDetailScreen(
                             modifier = Modifier.size(13.dp)
                         )
                         Spacer(Modifier.width(5.dp))
-                        Text("item info")
+                        Text("[제공 정보]")
                     }
-
-                    Text("Item Info hrerereer")
+                    Text("[${itemName}]")
+                    Text(itemInfo?: "")
                 }
             }
 
@@ -182,18 +215,35 @@ fun AdvertisementDetailScreen(
                     )
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(40.dp)
                 ) {
-                    Text("모집 인원")
-                    Text("모집 기간")
+                    Text("모집 인원", style = MaterialTheme.typography.labelSmall)
+                    Text(stringBuilder.append(recruitmentNumber).append(" 명").toString())
 
-                    Text("리뷰어 발표")
+                    Text("모집 기간", style = MaterialTheme.typography.labelSmall)
+                    Text(
+                        stringBuilder
+                            .append(recruitmentStartAt)
+                            .append("~")
+                            .append(recruitmentEndAt)
+                            .toString())
 
-                    Text("리뷰 등록 기간")
+                    Text("리뷰어 발표", style = MaterialTheme.typography.labelSmall)
+                    Text(announcementAt)
 
-                    Text("캠페인 마감")
+                    Text("리뷰 등록 기간", style = MaterialTheme.typography.labelSmall)
+                    Text(
+                        stringBuilder
+                            .append(reviewStartAt)
+                            .append("~")
+                            .append(reviewEndAt)
+                            .toString()
+                    )
+
+                    Text("캠페인 마감", style = MaterialTheme.typography.labelSmall)
+                    Text(endAt)
                 }
             }
 
@@ -263,5 +313,7 @@ fun AdvertisementDetailScreen(
 @Preview(showBackground = true)
 @Composable
 fun PreviewAdvertisementDetailScreen() {
-    AdvertisementDetailScreen()
+    AdvertisementDetailScreen(
+        id = 1L
+    )
 }

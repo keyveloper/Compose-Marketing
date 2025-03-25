@@ -26,7 +26,6 @@ fun ScaffoldTestScreen() {
 
     Scaffold(
         topBar = {
-            MainTopBar()
         },
         bottomBar = {
             NavigationBar {
