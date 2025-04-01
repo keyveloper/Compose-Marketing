@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.marketing.dto.user.request.SignUpAdmin
-import com.example.marketing.item.SignUpFormItem
+import com.example.marketing.ui.item.SignUpFormItem
 import com.example.marketing.state.SignUpAdminState
 import com.example.marketing.ui.component.SignUpForm
 import com.example.marketing.viewmodel.AdminSignUpViewModel

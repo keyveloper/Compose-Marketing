@@ -18,10 +18,12 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.*
+import com.example.marketing.enums.MainScreenStatus
 
 @Composable
 fun MainBottomBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSelected: (MainScreenStatus) -> Unit
 ) {
     Box(
         modifier = modifier

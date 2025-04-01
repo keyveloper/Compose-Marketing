@@ -1,4 +1,4 @@
-package com.example.marketing.item
+package com.example.marketing.ui.item
 
 data class SignUpFormItem(
     val label: String,

@@ -19,11 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.marketing.enums.MainScreenStatus
 
 
 @Composable
 fun MainTopBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box( // 이건 MainScrren에서 선언한 속성 그대로 적용
         modifier = modifier

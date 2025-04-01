@@ -18,7 +18,7 @@ import com.example.marketing.enums.ReviewIcon
 import com.example.marketing.enums.ReviewType
 
 @Composable
-fun AdvertisementThumbnail(
+fun VerticalAdvertisementThumbnail(
     item: AdvertisementThumbnailItem,
     modifier: Modifier = Modifier,
     onClick: (Long) -> Unit
@@ -105,7 +105,7 @@ fun AdvertisementThumbnail(
 @Preview(showBackground = true)
 @Composable
 fun PreviewAdvertisementThumbnail() {
-    AdvertisementThumbnail(
+    VerticalAdvertisementThumbnail(
         item =  AdvertisementThumbnailItem(
             advertisementId = 1L,
             thumbnailImageUrl = "",

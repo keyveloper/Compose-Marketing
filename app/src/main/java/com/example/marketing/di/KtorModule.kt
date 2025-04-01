@@ -1,6 +1,7 @@
 package com.example.marketing.di
 
 import android.util.Log
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +18,7 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
-import io.ktor.serialization.gson.gson
+import io.ktor.serialization.gson.GsonConverter
 import javax.inject.Singleton
 
 @Module
@@ -26,10 +27,10 @@ object KtorModule {
 
     @Singleton
     @Provides
-    fun provideHttpClient(): HttpClient {
+    fun provideHttpClient(gson: Gson): HttpClient {
         return HttpClient(CIO) {
             install(ContentNegotiation) {
-                gson()
+                register(ContentType.Application.Json, GsonConverter(gson))
             }
 
             install(HttpTimeout) {
