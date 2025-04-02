@@ -8,6 +8,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.view.AuthHealthCheckScreen
+import com.example.marketing.view.AuthHomeScreen
 import com.example.marketing.view.MainScreen
 import com.example.marketing.view.SplashV1Screen
 
@@ -43,11 +44,18 @@ fun AppNavGraph(
                 )
             }
 
-            composable(ScreenRoute.AUTH_LOGIN.route) {
+            composable(ScreenRoute.AUTH_HOME.route) {
+                AuthHomeScreen(
+                    toInfluencer = {},
+                    toAdvertiser = {}
+                )
+            }
+
+            composable(ScreenRoute.AUTH_ADVERTISER_LOGIN.route) {
 
             }
 
-            composable(ScreenRoute.AUTH_SIGNUP.route) {
+            composable(ScreenRoute.AUTH_INFLUENCER_LOGIN.route) {
 
             }
         }

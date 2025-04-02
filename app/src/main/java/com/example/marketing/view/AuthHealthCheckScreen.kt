@@ -21,7 +21,7 @@ fun AuthHealthCheckScreen(
                 popUpTo(ScreenRoute.AUTH_HEALTH) { inclusive = true }
             }
         } else {
-            navController.navigate(ScreenRoute.AUTH_LOGIN.route) {
+            navController.navigate(ScreenRoute.AUTH_HOME.route) {
                 popUpTo(ScreenRoute.AUTH_HEALTH) { inclusive = true }
             }
         }
