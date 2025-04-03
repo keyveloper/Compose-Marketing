@@ -24,15 +24,15 @@ fun VerticalAdvertisementThumbnail(
     onClick: (Long) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .clickable { onClick(item.advertisementId) }
     ) {
 
         // Image tmp -> should change to coil
         Card(
             modifier = Modifier
-                .size(width = 170.dp, height = 180.dp),
-            shape = RoundedCornerShape(16.dp),
+                .size(width = 190.dp, height = 180.dp),
+            shape = RoundedCornerShape(0.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Image(

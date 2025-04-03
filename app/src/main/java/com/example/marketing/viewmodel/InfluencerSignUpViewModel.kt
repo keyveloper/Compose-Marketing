@@ -1,19 +1,34 @@
 package com.example.marketing.viewmodel
 
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import com.example.marketing.repository.AuthRepository
+import com.example.marketing.ui.item.ChannelFloatingObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class InfluencerSignUpViewModel @Inject constructor(
     private val repository: AuthRepository
 ): ViewModel() {
-    private val _credentialPartLive = MutableStateFlow (true)
+    // part
+    // 1. credential
+    private val _credentialPartLive = MutableStateFlow (false)
     val credentialPartLive = _credentialPartLive.asStateFlow()
 
+    // 2. detail
+    private val _detailPartLive = MutableStateFlow (false)
+    val detailPartStatus = _detailPartLive.asStateFlow()
+
+    // 3. channel
+    private val _channelPartLive = MutableStateFlow (true)
+    val channelPartStatus = _channelPartLive.asStateFlow()
+
+    // 1+. credential model
     private val _loginId = MutableStateFlow ("")
     val loginId = _loginId.asStateFlow()
 
@@ -32,21 +47,19 @@ class InfluencerSignUpViewModel @Inject constructor(
     private val _credentialStatus = MutableStateFlow (false)
     val credentialStatus = _credentialStatus.asStateFlow()
 
-    // details part
-    private val _detailPartLive = MutableStateFlow (false)
-    val detailPartStatus = _detailPartLive.asStateFlow()
+    private val _formattedDate = MutableStateFlow ("")
+    val formattedDate = _formattedDate.asStateFlow()
 
-    private val _datePickerLive = MutableStateFlow (false)
-    val datePickerLive = _datePickerLive.asStateFlow()
+    // 3+. channel
+    private val _channels = MutableStateFlow<List<ChannelFloatingObject>> (
+        listOf()
+    )
+    val channel = _channels.asStateFlow()
 
-    private val _date = MutableStateFlow ("")
-    val date = _date.asStateFlow()
+    private val _primaryId = MutableStateFlow (0)
+    val primaryId = _primaryId.asStateFlow()
 
-
-    // channel part
-    private val _channelPartLive = MutableStateFlow (false)
-    val channelPartStatus = _channelPartLive.asStateFlow()
-
+    val channels: StateFlow<List<ChannelFloatingObject>> = _channels.asStateFlow()
 
     fun setLoginId(loginId: String) {
         _loginId.value = loginId
@@ -85,12 +98,34 @@ class InfluencerSignUpViewModel @Inject constructor(
         _channelPartLive.value = isLive
     }
 
-    fun updateDatePickerLive(isLive: Boolean) {
-        _datePickerLive.value = isLive
+
+    fun setFormattedDate(date: String) {
+        _formattedDate.value = date
+
     }
 
-    fun updateDate(date: String) {
-        _date.value = date
+    fun addChannel(
+        channel: ChannelFloatingObject
+    ) {
+        _channels.value += channel
+    }
+
+    fun updateChannelCardPosition(id: Int, offset: Offset) {
+        _channels.update { list ->
+            list.map { item ->
+                if (item.id == id) item.copy(currentPosition = offset)
+                else item
+            }
+        }
+    }
+
+    fun resetChannelCardToDefaultPosition(id: Int) {
+        _channels.update { list ->
+            list.map { item ->
+                if (item.id == id) item.copy(currentPosition = item.defaultPosition)
+                else item
+            }
+        }
     }
 
 
@@ -104,7 +139,6 @@ class InfluencerSignUpViewModel @Inject constructor(
         updateCredentialStatus(false)
         updateDetailPartLive(true)
         updateChannelPertLive(false)
-        updateDatePickerLive(true)
     }
 
     fun nextToChannelPart() {

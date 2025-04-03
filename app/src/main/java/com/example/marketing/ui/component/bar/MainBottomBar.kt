@@ -1,23 +1,16 @@
-package com.example.marketing.ui.component
+package com.example.marketing.ui.component.bar
 
 import androidx.compose.runtime.Composable
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.*
-import androidx.compose.ui.unit.*
 import androidx.compose.material3.*
-import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.layout.*
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.*
 import com.example.marketing.enums.MainScreenStatus
 
 @Composable

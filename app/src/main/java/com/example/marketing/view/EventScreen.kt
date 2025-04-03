@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.*
 import androidx.compose.material3.*
@@ -40,7 +41,7 @@ fun EventScreen(
     val density = LocalDensity.current
 
     LaunchedEffect(Unit) {
-        eventViewModel.fetchFresh()
+        // eventViewModel.fetchFresh()
     }
 
     LazyColumn(
@@ -97,54 +98,35 @@ fun EventScreen(
         // 상태 텍스트 등 추가 헤더 요소
         item {
             Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
+
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 text = "Timeline State Here",
                 style = MaterialTheme.typography.titleLarge
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // 광고 아이템들을 두 그룹(왼쪽, 오른쪽)으로 나눔.
-        // 오른쪽은 스크롤 오프셋에 반대 방향의 offset을 적용해 움직임을 반전.
-        val leftItems = advertisementItems.take(advertisementItems.size / 2 - 1)
-        val rightItems = advertisementItems.drop(advertisementItems.size / 2)
-        val rowCount = maxOf(leftItems.size, rightItems.size)
-
-        items(rowCount) { rowIndex ->
-            // 전체 LazyColumn의 스크롤 오프셋을 가져와서 우측 컬럼에 적용할 offset으로 변환.
-            // (여기서는 첫 번째 보이는 아이템의 오프셋만 사용합니다)
-            val scrollOffsetPx = listState.firstVisibleItemScrollOffset
-            val rightOffsetDp = with(density) { (-scrollOffsetPx).toDp() }
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                // 왼쪽 박스: 스크롤 오프셋 없이 그대로 표시
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                ) {
-                    if (rowIndex < leftItems.size) {
-                        VerticalAdvertisementThumbnail(
-                            item = leftItems[rowIndex],
-                            modifier = Modifier.fillMaxWidth()
-                        ) { }
-                    }
+        items(advertisementItems.chunked(2)) { rowItems ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 16.dp)
+                ,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                rowItems.forEach { item ->
+                    VerticalAdvertisementThumbnail(
+                        item = item,
+                        onClick = {}
+                    )
                 }
-                // 오른쪽 박스: 스크롤 오프셋의 음수 값을 offset으로 적용해 반대 방향으로 움직임
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                        .offset(y = rightOffsetDp)
-                ) {
-                    if (rowIndex < rightItems.size) {
-                        VerticalAdvertisementThumbnail(
-                            item = rightItems[rowIndex],
-                            modifier = Modifier.fillMaxWidth()
-                        ) { }
-                    }
+
+                // Fill empty space if only 1 item in last row
+                if (rowItems.size < 2) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
