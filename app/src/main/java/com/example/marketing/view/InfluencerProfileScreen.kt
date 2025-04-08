@@ -2,36 +2,42 @@ package com.example.marketing.view
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.*
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose .runtime.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.*
-import androidx.compose.material3.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.*
-import androidx.compose.ui.text.font.*
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.*
-import com.example.marketing.R
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.ChannelIcon
 import com.example.marketing.viewmodel.InfluencerProfileViewModel
 
@@ -39,6 +45,8 @@ import com.example.marketing.viewmodel.InfluencerProfileViewModel
 fun InfluencerProfileScreen(
     viewModel: InfluencerProfileViewModel = hiltViewModel()
 ) {
+    val influencer = viewModel.influencer.collectAsState()
+
     val minHeight: Dp = 120.dp
     val maxHeight: Dp = 250.dp
     val density = LocalDensity.current
@@ -56,8 +64,6 @@ fun InfluencerProfileScreen(
             }
         }
     }
-
-    val influencer = viewModel.influencer.collectAsState()
 
     val animatedHeight by animateDpAsState(
         targetValue = maxHeight + with(density) { offset.toDp() },

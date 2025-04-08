@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.marketing.enums.ScreenRoute
+import com.example.marketing.view.AdvertiserLoginScreen
+import com.example.marketing.view.AdvertiserSignUpScreen
 import com.example.marketing.view.AuthHealthCheckScreen
 import com.example.marketing.view.AuthHomeScreen
 import com.example.marketing.view.InfluencerLoginScreen
@@ -57,10 +59,21 @@ fun AppNavGraph(
             }
 
             composable(ScreenRoute.AUTH_ADVERTISER_LOGIN.route) {
+                AdvertiserLoginScreen(
+                    toSignUp = {
+                        navController.navigate(
+                            ScreenRoute.AUTH_ADVERTISER_SIGNUP.route
+                        )
+                    }
+                )
             }
 
             composable(ScreenRoute.AUTH_INFLUENCER_LOGIN.route) {
                 InfluencerLoginScreen()
+            }
+
+            composable(ScreenRoute.AUTH_ADVERTISER_SIGNUP.route) {
+                AdvertiserSignUpScreen()
             }
         }
 

@@ -12,7 +12,7 @@ fun SplashV1Screen(
     onSplashDone: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(5000)
+        kotlinx.coroutines.delay(3000)
         onSplashDone()
     }
 

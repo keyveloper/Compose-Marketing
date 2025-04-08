@@ -49,6 +49,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -140,7 +141,6 @@ fun InfluencerSignUpScreen(
                     value = loginId.value,
                     onValueChange = {
                         viewModel.setLoginId(it)
-
                     },
                     label = { Text("아이디") },
                     modifier = Modifier

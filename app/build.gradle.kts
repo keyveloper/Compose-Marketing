@@ -115,4 +115,7 @@ dependencies {
     // jwt token storage (jetpack security)
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
+    // Google Maps
+    implementation("com.google.maps.android:maps-compose:4.4.1")
+
 }
