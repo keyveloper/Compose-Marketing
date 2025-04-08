@@ -31,7 +31,7 @@ fun AuthHomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedButton(
-                onClick = {  },
+                onClick = { toInfluencer() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
@@ -46,7 +46,7 @@ fun AuthHomeScreen(
             }
 
             OutlinedButton(
-                onClick = {  },
+                onClick = { toAdvertiser() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),

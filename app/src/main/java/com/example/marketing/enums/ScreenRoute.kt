@@ -16,5 +16,7 @@ enum class ScreenRoute(val route: String) {
 
     // MAIN SCOPE = GLOBAL SCOPE
     MAIN("main"),
+    MAIN_HOME("home"),
+
 
 }

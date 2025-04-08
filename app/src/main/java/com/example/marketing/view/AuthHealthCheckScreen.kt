@@ -18,11 +18,11 @@ fun AuthHealthCheckScreen(
     LaunchedEffect(isLoggedIn.value) {
         if (isLoggedIn.value) {
             navController.navigate(ScreenRoute.MAIN.route) {
-                popUpTo(ScreenRoute.AUTH_HEALTH) { inclusive = true }
+                popUpTo(ScreenRoute.AUTH_HEALTH.route) { inclusive = true }
             }
         } else {
             navController.navigate(ScreenRoute.AUTH_HOME.route) {
-                popUpTo(ScreenRoute.AUTH_HEALTH) { inclusive = true }
+                popUpTo(ScreenRoute.AUTH_HEALTH.route) { inclusive = true }
             }
         }
     }
