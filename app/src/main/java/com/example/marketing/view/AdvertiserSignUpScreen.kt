@@ -1,5 +1,7 @@
 package com.example.marketing.view
 
+import android.content.Context
+import android.location.Geocoder
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -19,10 +21,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,8 +41,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.AdvertiserSignUpStatus
 import com.example.marketing.enums.UserType
@@ -341,28 +347,58 @@ fun AdvertiserSignUpScreen(
         enter = EnterTransition.None,
         exit = ExitTransition.None
     ) {
-        val seoul = LatLng(37.5665, 126.9780) // Coordinates for Seoul
-
+        val context = LocalContext.current
+        var query by remember { mutableStateOf("") }
+        var selectedLocation by remember {
+            mutableStateOf(LatLng(37.5665, 126.9780))
+        }
+        var mapVisible by remember { mutableStateOf(false) }
         val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(seoul, 10f) // zoom level 10
+            position = CameraPosition.fromLatLngZoom(selectedLocation, 10f) // zoom level 10
         }
 
         Box(
             modifier = Modifier.fillMaxSize()
-                .padding(horizontal = 24.dp)
+                .padding(top = 36.dp, start = 24.dp, end = 24.dp)
                 .background(Color.White)
         ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
+            Text("👉 사업 주소지를 입력해주세요.")
+
+            IconButton(onClick = { mapVisible = true }) {
+                Text(text = "🗺️", fontSize = 72.sp)
+            }
+            AnimatedVisibility (
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .height(600.dp),
+                visible = mapVisible,
+                enter = EnterTransition.None,
+                exit = ExitTransition.None
             ) {
-                Marker(
-                    state = rememberMarkerState(position = seoul),
-                    title = "Seoul",
-                    snippet = "Capital of South Korea"
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        label = { Text("Search location") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    GoogleMap(
+                        cameraPositionState = cameraPositionState
+                    ) {
+                        Marker(
+                            state = rememberMarkerState(position = selectedLocation),
+                            title = "Seoul",
+                            snippet = "Capital of South Korea"
+                        )
+                    }
+                }
             }
         }
-
     }
 }

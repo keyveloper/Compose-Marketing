@@ -10,16 +10,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.marketing.enums.MainScreenStatus
+import com.example.marketing.enums.UserStatus
 import com.example.marketing.ui.component.bar.MainBottomBar
 import com.example.marketing.ui.component.bar.MainTopBar
 import com.example.marketing.viewmodel.MainViewModel
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
 ) {
-    val mainStatus = mainViewModel.mainStatus.collectAsState()
+    val mainStatus = viewModel.mainStatus.collectAsState()
+    val userStatus = viewModel.userStatus.collectAsState()
 
     // status
     // HOME, LOCATION, FOLLOW, MY_PROFILE
@@ -32,7 +36,7 @@ fun MainScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .background(MaterialTheme.colorScheme.secondary)
+                .background(MaterialTheme.colorScheme.onSecondary)
                 .align(Alignment.TopCenter),
         )
         when (mainStatus.value) {
@@ -63,7 +67,21 @@ fun MainScreen(
             }
 
             MainScreenStatus.PROFILE -> {
+                if (userStatus.value == UserStatus.INFLUENCER) {
+                    InfluencerProfileScreen()
+                }
+            }
 
+            MainScreenStatus.GOLDEN -> {
+                GoldenKeywordScreen(
+                    modifier = Modifier
+                        .padding(
+                            top = 56.dp,
+                            bottom = 56.dp
+                        )
+                        .fillMaxSize()
+                        .background(Color.White)
+                )
             }
         }
 
@@ -74,16 +92,9 @@ fun MainScreen(
                 .background(Color.White)
                 .align(Alignment.BottomCenter)
                 .height(56.dp),
-            onSelected = { selectedStatus ->
-                mainViewModel.changeStatus(selectedStatus)
+            onStatusChange = { status ->
+                viewModel.changeStatus(status)
             }
         )
     }
-}
-
-
-@Preview
-@Composable
-fun PreviewMyMainScreen() {
-    MainScreen()
 }

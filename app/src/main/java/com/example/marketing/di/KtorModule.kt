@@ -34,9 +34,9 @@ object KtorModule {
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 3000000   // 30초 * 100
-                connectTimeoutMillis = 3000000   // 30초 * 100
-                socketTimeoutMillis = 1500000  // 소켓 시간 15초 * 100
+                requestTimeoutMillis = 30000000   // 30초 * 100
+                connectTimeoutMillis = 30000000   // 30초 * 100
+                socketTimeoutMillis = 30000000 // 소켓 시간 15초 * 100
             }
 
             install(DefaultRequest) {
@@ -44,7 +44,7 @@ object KtorModule {
 
                 url {
                     protocol = URLProtocol.HTTP
-                    host = "10.0.2.2"
+                    host = "192.168.116.89"
                     port = 8080
                 }
                 header("User-Agent", "Marketing app")

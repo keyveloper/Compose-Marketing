@@ -1,10 +1,7 @@
-package com.example.marketing.ui.component.card
+package com.example.marketing.ui.component
 
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.foundation.background
-import androidx.compose .runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.*

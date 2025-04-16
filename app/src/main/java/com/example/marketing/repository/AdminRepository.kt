@@ -9,7 +9,6 @@ import javax.inject.Inject
 class AdminRepository @Inject constructor(
     private val adminApi: AdminApi,
 ){
-
     suspend fun signUp(requestModel: SignUpAdmin): Long {
         val response = adminApi.signUp(requestModel)
 

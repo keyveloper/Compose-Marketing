@@ -5,7 +5,8 @@ enum class MainScreenStatus(val code: Int) {
     LOCATION_NEAR(1),
     LOCATION_MAP(2),
     FOLLOW(3),
-    PROFILE(4);
+    GOLDEN(4),
+    PROFILE(5);
 
     companion object {
         fun fromCode(code: Int): MainScreenStatus? {

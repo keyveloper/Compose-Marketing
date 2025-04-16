@@ -84,6 +84,7 @@ fun AppNavGraph(
             composable(ScreenRoute.MAIN_HOME.route) {
                 MainScreen()
             }
+
         }
     }
 }

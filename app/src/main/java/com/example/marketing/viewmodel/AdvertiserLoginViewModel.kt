@@ -1,16 +1,20 @@
 package com.example.marketing.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.marketing.dto.user.request.LoginAdvertiser
 import com.example.marketing.repository.AdvertiseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AdvertiserLoginViewModel @Inject constructor(
-    advertiserRepository: AdvertiseRepository
+    private val advertiserRepository: AdvertiseRepository
 ): ViewModel() {
 
     private val _loginId = MutableStateFlow ("")
@@ -28,8 +32,10 @@ class AdvertiserLoginViewModel @Inject constructor(
     }
 
     fun login() {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            advertiserRepository.login(
+                LoginAdvertiser.of(_loginId.value, _password.value)
+            )
+        }
     }
-
-
 }
