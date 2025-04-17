@@ -6,7 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,8 +43,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.ChannelIcon
+import com.example.marketing.ui.color.PastelPea
 import com.example.marketing.viewmodel.AdvertiserProfileViewModel
-import com.example.marketing.viewmodel.InfluencerProfileViewModel
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 
@@ -52,9 +54,11 @@ fun AdvertiserProfileScreen(
     initAdvertiserId: Long
 ) {
     val advertiserId = viewModel.advertiserId.collectAsState()
+    val profile = viewModel.profile.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.updateAdvertiserId(initAdvertiserId)
-        snapshotFlow { viewModel.advertiserId.value }
+        snapshotFlow { advertiserId.value }
             .filter { it != -1L }
             .first()
             .let { viewModel.fetchProfile(it) }
@@ -126,7 +130,108 @@ fun AdvertiserProfileScreen(
                 ),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(250.dp)
+                        .background(PastelPea)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = profile.value?.companyName ?: "",
+                            style = MaterialTheme.typography.titleLarge
+                        )
 
+                        Text(
+                            text = profile.value?.companyInfo ?: "",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+
+                        Text(
+                            text = profile.value?.companyLocation ?: "",
+                            style = MaterialTheme.typography.displaySmall
+                        )
+
+                        Text(
+                            text = profile.value?.followerCount.toString(),
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(300.dp)
+                        .background(PastelPea)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "About",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        Text(
+                            text = profile.value?.introduction ?: "",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(100.dp)
+                        .background(PastelPea)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Advertisements",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                onClick = {}
+                            ) {
+                                Text(
+                                    text = "진행중인 광고",
+                                )
+                            }
+
+                            Button(
+                                onClick = {}
+                            ) {
+                                Text(
+                                    text = "완료된 광고"
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            items(1) {
+                // advertisement...
+            }
         }
 
     }
