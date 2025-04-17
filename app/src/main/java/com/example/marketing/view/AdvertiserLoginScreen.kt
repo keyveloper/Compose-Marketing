@@ -12,28 +12,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.enums.ScreenRoute
+import com.example.marketing.enums.UserStatus
 import com.example.marketing.viewmodel.AdvertiserLoginViewModel
 
 @Composable
 fun AdvertiserLoginScreen(
     viewmodel: AdvertiserLoginViewModel = hiltViewModel(),
-    toSignUp: () -> Unit,
+    navController: NavController
 ) {
     val loginId = viewmodel.loginId.collectAsState()
     val password = viewmodel.password.collectAsState()
+    val apiCallStatus = viewmodel.apiCallStatus.collectAsState()
+    val advertiserId = viewmodel.advertiserId.collectAsState()
+
+    LaunchedEffect(apiCallStatus.value) {
+        if (apiCallStatus.value == ApiCallStatus.SUCCESS && advertiserId.value != -1L) {
+            navController.navigate(
+                "${ScreenRoute.MAIN_INIT.route}/" +
+                        "${UserStatus.ADVERTISER.ordinal}/" +
+                        "${advertiserId.value}"
+            )
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -82,7 +96,9 @@ fun AdvertiserLoginScreen(
 
             Text(
                 text ="회원이 아니신가요?",
-                modifier = Modifier.clickable { toSignUp() }
+                modifier = Modifier.clickable {
+                    navController.navigate(ScreenRoute.AUTH_ADVERTISER_SIGNUP.route)
+                }
             )
         }
     }
