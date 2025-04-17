@@ -1,5 +1,6 @@
 package com.example.marketing.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.marketing.domain.AdvertiserProfileResult
@@ -30,6 +31,7 @@ class AdvertiserProfileViewModel @Inject constructor(
 
     fun updateAdvertiserId(id: Long) {
         _advertiserId.value = id
+        Log.i("advertiserProfileViewModel", "set id: ${_advertiserId.value}")
     }
 
     private fun updateProfile(profile: AdvertiserProfileResult) {

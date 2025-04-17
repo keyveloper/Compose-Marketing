@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +43,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.ChannelIcon
 import com.example.marketing.viewmodel.AdvertiserProfileViewModel
 import com.example.marketing.viewmodel.InfluencerProfileViewModel
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun AdvertiserProfileScreen(
@@ -51,7 +54,10 @@ fun AdvertiserProfileScreen(
     val advertiserId = viewModel.advertiserId.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.updateAdvertiserId(initAdvertiserId)
-        viewModel.fetchProfile(advertiserId.value)
+        snapshotFlow { viewModel.advertiserId.value }
+            .filter { it != -1L }
+            .first()
+            .let { viewModel.fetchProfile(it) }
     }
 
     val minHeight: Dp = 120.dp
