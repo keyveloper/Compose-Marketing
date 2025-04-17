@@ -81,7 +81,7 @@ fun MainScreen(
 
                     UserStatus.ADVERTISER -> {
                         AdvertiserProfileScreen(
-                            advertiserId = userId.value
+                            initAdvertiserId = userId.value
                         )
                     }
 

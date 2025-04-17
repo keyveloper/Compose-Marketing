@@ -46,10 +46,12 @@ import com.example.marketing.viewmodel.InfluencerProfileViewModel
 @Composable
 fun AdvertiserProfileScreen(
     viewModel: AdvertiserProfileViewModel = hiltViewModel(),
-    advertiserId: Long
+    initAdvertiserId: Long
 ) {
+    val advertiserId = viewModel.advertiserId.collectAsState()
     LaunchedEffect(Unit) {
-        viewModel.updateAdvertiserId(advertiserId)
+        viewModel.updateAdvertiserId(initAdvertiserId)
+        viewModel.fetchProfile(advertiserId.value)
     }
 
     val minHeight: Dp = 120.dp
@@ -106,6 +108,20 @@ fun AdvertiserProfileScreen(
                 .border(2.dp, Color.White, CircleShape)
                 .padding(16.dp)
         )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(
+                    top = animatedHeight + 60.dp / 2,
+                    start = 16.dp,
+                    end = 16.dp
+                ),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+
+        }
 
     }
 }
