@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.AdvertiserSignUpStatus
+import com.example.marketing.enums.AdvertiserType
 import com.example.marketing.enums.UserType
 import com.example.marketing.viewmodel.AdvertiserSignUpViewModel
 import com.google.android.gms.maps.model.CameraPosition
@@ -214,7 +215,7 @@ fun AdvertiserSignUpScreen(
     ) {
         val companyName = viewModel.companyName.collectAsState()
         val homepageUrl = viewModel.homepageUrl.collectAsState()
-        val userType = viewModel.userType.collectAsState()
+        val advertiserType = viewModel.advertiserType.collectAsState()
         var nextStage by remember { mutableStateOf(false) }
 
         Box(
@@ -245,9 +246,9 @@ fun AdvertiserSignUpScreen(
                             .weight(1f)
                             .fillMaxHeight()
                             .clickable {
-                                viewModel.updateUserType(UserType.ADVERTISER_COMMON)
+                                viewModel.updateAdvertiserType(AdvertiserType.NORMAL)
                             },
-                        border = if (userType.value == UserType.ADVERTISER_COMMON)
+                        border = if (advertiserType.value == AdvertiserType.NORMAL)
                             BorderStroke(2.dp, Color(0xFF0f4c81)) else null
                     ) {
                         Column(
@@ -271,9 +272,9 @@ fun AdvertiserSignUpScreen(
                             .weight(1f)
                             .fillMaxHeight()
                             .clickable {
-                                viewModel.updateUserType(UserType.ADVERTISER_BRAND)
+                                viewModel.updateAdvertiserType(AdvertiserType.BRAND)
                             },
-                        border = if (userType.value == UserType.ADVERTISER_BRAND)
+                        border = if (advertiserType.value == AdvertiserType.BRAND)
                             BorderStroke(2.dp, Color(0xFF0f4c81)) else null
                     ) {
                         Column(
@@ -317,9 +318,11 @@ fun AdvertiserSignUpScreen(
                     shape = RoundedCornerShape(8.dp)
                 )
 
+
+
                 Button(
                     onClick = {
-                        viewModel.updateLiveStatus(AdvertiserSignUpStatus.MAP)
+                        viewModel.signUp()
                     }, // api call !!
                     enabled = nextStage,
                     modifier = Modifier
@@ -331,7 +334,7 @@ fun AdvertiserSignUpScreen(
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Next")
+                    Text("회원가입")
                 }
 
                 if (companyName.value.isNotEmpty()) {

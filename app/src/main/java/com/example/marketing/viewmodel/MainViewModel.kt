@@ -16,13 +16,26 @@ class MainViewModel @Inject constructor(
     private val advertisementRepository: AdvertisementRepository,
     private val influencerRepository: InfluencerRepository,
 ): ViewModel() {
-    private val _mainStatus = MutableStateFlow(MainScreenStatus.GOLDEN)
-    val mainStatus: StateFlow<MainScreenStatus> = _mainStatus.asStateFlow()
+    private val _screenStatus = MutableStateFlow(MainScreenStatus.GOLDEN)
+    val screenStatus: StateFlow<MainScreenStatus> = _screenStatus.asStateFlow()
 
     private val _userStatus = MutableStateFlow(UserStatus.INFLUENCER)
     val userStatus: StateFlow<UserStatus> = _userStatus.asStateFlow()
+    
+    private val _userId = MutableStateFlow(-1L)
+    val userId = _userId.asStateFlow()
 
-    fun changeStatus(status: MainScreenStatus) {
-        _mainStatus.value = status
+    fun updateScreenStatus(status: MainScreenStatus) {
+        _screenStatus.value = status
     }
+
+    fun updateUserStatus(status: UserStatus) {
+        _userStatus.value = status
+    }
+
+    fun updateUserId(id: Long) {
+        _userId.value = id
+    }
+
+
 }
