@@ -2,11 +2,14 @@ package com.example.marketing.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.marketing.enums.ScreenRoute
+import com.example.marketing.enums.UserStatus
 import com.example.marketing.view.AdvertiserLoginScreen
 import com.example.marketing.view.AdvertiserSignUpScreen
 import com.example.marketing.view.AuthHealthCheckScreen
@@ -60,11 +63,7 @@ fun AppNavGraph(
 
             composable(ScreenRoute.AUTH_ADVERTISER_LOGIN.route) {
                 AdvertiserLoginScreen(
-                    toSignUp = {
-                        navController.navigate(
-                            ScreenRoute.AUTH_ADVERTISER_SIGNUP.route
-                        )
-                    }
+                    navController = navController
                 )
             }
 
@@ -78,11 +77,25 @@ fun AppNavGraph(
         }
 
         navigation(
-            startDestination = ScreenRoute.MAIN_HOME.route,
+            startDestination = ScreenRoute.MAIN_INIT.route,
             route = ScreenRoute.MAIN.route
         ) {
-            composable(ScreenRoute.MAIN_HOME.route) {
-                MainScreen()
+            composable(ScreenRoute.MAIN_INIT.route) {
+                // do nothing
+            }
+
+            composable(
+                route = ScreenRoute.MAIN_INIT.route + "/{userTypeOrdinal}/{userId}",
+                arguments = listOf(
+                    navArgument("userTypeOrdinal") { type = NavType.IntType },
+                    navArgument("userId") { type = NavType.LongType }
+                    )
+            ) { backStackEntry ->
+                val userTypeOrdinal = backStackEntry.arguments?.getInt("userTypeOrdinal") ?: -1
+                val userId = backStackEntry.arguments?.getLong("userId") ?: -1L
+                MainScreen(
+                    userInitStatus = UserStatus.entries[userTypeOrdinal],
+                    initUserId = userId)
             }
 
         }

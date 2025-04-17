@@ -21,9 +21,17 @@ import com.example.marketing.viewmodel.MainViewModel
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
+    userInitStatus: UserStatus,
+    initUserId: Long
 ) {
-    val mainStatus = viewModel.mainStatus.collectAsState()
+    val screenStatus = viewModel.screenStatus.collectAsState()
     val userStatus = viewModel.userStatus.collectAsState()
+    val userId = viewModel.userId.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.updateUserStatus(userInitStatus)
+        viewModel.updateUserId(initUserId)
+    }
 
     // status
     // HOME, LOCATION, FOLLOW, MY_PROFILE
@@ -39,8 +47,7 @@ fun MainScreen(
                 .background(MaterialTheme.colorScheme.onSecondary)
                 .align(Alignment.TopCenter),
         )
-        when (mainStatus.value) {
-
+        when (screenStatus.value) {
             MainScreenStatus.LOCATION_NEAR -> {
 
             }
@@ -67,8 +74,24 @@ fun MainScreen(
             }
 
             MainScreenStatus.PROFILE -> {
-                if (userStatus.value == UserStatus.INFLUENCER) {
-                    InfluencerProfileScreen()
+                when (userStatus.value) {
+                    UserStatus.INFLUENCER -> {
+                        InfluencerProfileScreen()
+                    }
+
+                    UserStatus.ADVERTISER -> {
+                        AdvertiserProfileScreen(
+                            advertiserId = userId.value
+                        )
+                    }
+
+                    UserStatus.ADMIN -> {
+
+                    }
+
+                    UserStatus.ADVERTISER_BRAND -> {
+
+                    }
                 }
             }
 
@@ -93,7 +116,7 @@ fun MainScreen(
                 .align(Alignment.BottomCenter)
                 .height(56.dp),
             onStatusChange = { status ->
-                viewModel.changeStatus(status)
+                viewModel.updateScreenStatus(status)
             }
         )
     }
