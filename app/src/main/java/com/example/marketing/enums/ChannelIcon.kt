@@ -6,7 +6,8 @@ enum class ChannelIcon(
     val code: Int,
     val painterId: Int,
     val description: String,
-    val title: String) {
+    val title: String
+) {
 
     BLOGGER(0, R.drawable.naver_blog, "naver blog icon", "블로그"),
     YOUTUBER(1, R.drawable.youyube_fiiled, "youtube icon", "유튜브"),

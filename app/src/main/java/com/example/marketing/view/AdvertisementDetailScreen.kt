@@ -277,8 +277,6 @@ fun AdvertisementDetailScreen(
                             text = "#keyword here!!",
                             style = MaterialTheme.typography.labelSmall
                         )
-                        Text("#??")
-                        Text("#dfaf")
                     }
                 }
             }

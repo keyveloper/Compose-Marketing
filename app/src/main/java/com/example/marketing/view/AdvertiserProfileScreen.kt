@@ -124,7 +124,7 @@ fun AdvertiserProfileScreen(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(
-                    top = animatedHeight + 60.dp / 2,
+                    top = animatedHeight + 60.dp / 2 + 30.dp,
                     start = 16.dp,
                     end = 16.dp
                 ),
@@ -210,7 +210,8 @@ fun AdvertiserProfileScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Button(
-                                onClick = {}
+                                onClick = {},
+                                modifier = Modifier.weight(1f)
                             ) {
                                 Text(
                                     text = "진행중인 광고",
@@ -218,7 +219,8 @@ fun AdvertiserProfileScreen(
                             }
 
                             Button(
-                                onClick = {}
+                                onClick = {},
+                                modifier = Modifier.weight(1f)
                             ) {
                                 Text(
                                     text = "완료된 광고"
@@ -231,6 +233,11 @@ fun AdvertiserProfileScreen(
 
             items(1) {
                 // advertisement...
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(600.dp)
+                        .background(PastelPea)
+                )
             }
         }
 

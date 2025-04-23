@@ -53,7 +53,9 @@ fun MainScreen(
             }
 
             MainScreenStatus.LOCATION_MAP -> {
-
+                AdvertisementDetailScreen(
+                    id = 1L
+                )
             }
 
             MainScreenStatus.HOME -> {
@@ -106,6 +108,17 @@ fun MainScreen(
                         .background(Color.White)
                 )
             }
+
+            MainScreenStatus.ADVERTISER_WRITE -> {
+                AdvertisementWritingScreen(
+                    modifier = Modifier
+                        .padding(
+                            bottom = 56.dp
+                        )
+                        .fillMaxSize()
+                        .background(Color.White)
+                )
+            }
         }
 
 
@@ -117,7 +130,8 @@ fun MainScreen(
                 .height(56.dp),
             onStatusChange = { status ->
                 viewModel.updateScreenStatus(status)
-            }
+            },
+            userStatus = userStatus.value
         )
     }
 }
