@@ -6,7 +6,12 @@ plugins {
     // for kotlin 2.x up vertsion
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" apply false
 
+    // for hilt
     id("com.google.dagger.hilt.android") version "2.51.1" apply false
+
+    // for room
+    id("androidx.room") version "2.7.1" apply false
+    id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
 }
 
 

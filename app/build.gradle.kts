@@ -10,6 +10,10 @@ plugins {
 
     // for kotlin 2.x up vertsion 추가
     id("org.jetbrains.kotlin.plugin.compose")
+
+    // room
+    id("androidx.room")
+    id("com.google.devtools.ksp")
 }
 
 kapt {
@@ -59,6 +63,10 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 }
 
@@ -118,4 +126,11 @@ dependencies {
     // Google Maps
     implementation("com.google.maps.android:maps-compose:4.4.1")
     implementation("com.google.maps.android:maps-ktx:5.0.0")
+
+    // room
+    val room_version = "2.7.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp("androidx.room:room-compiler:$room_version")
 }
