@@ -23,6 +23,7 @@ fun VerticalAdvertisementThumbnail(
     modifier: Modifier = Modifier,
     onClick: (Long) -> Unit
 ) {
+    val reviewIconVector = ReviewIcon.fromCode(item.reviewType.code)!!.iconVector
     Column(
         modifier = modifier
             .clickable { onClick(item.advertisementId) }
@@ -36,7 +37,7 @@ fun VerticalAdvertisementThumbnail(
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.test),
+                imageVector = reviewIconVector,
                 contentDescription ="${item.itemName}'s thumbnail image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()

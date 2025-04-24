@@ -181,7 +181,6 @@ fun AdvertisementWritingScreen(
                     mutableStateOf(ChannelIcon.fromCode(selectedChannelType.value.code)!! )
                 }
 
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,

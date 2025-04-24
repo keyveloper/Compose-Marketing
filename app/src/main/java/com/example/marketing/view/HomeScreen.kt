@@ -51,7 +51,7 @@ fun HomeScreen(
                 }
                 
                 HomeScreenStatus.Delivery -> {
-                    
+                    DeliveryScreen()
                 }
 
                 HomeScreenStatus.Type -> {

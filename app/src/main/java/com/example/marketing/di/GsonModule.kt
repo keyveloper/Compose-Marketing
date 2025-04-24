@@ -1,7 +1,6 @@
 package com.example.marketing.di
 
 import com.example.marketing.domain.Advertisement
-import com.example.marketing.utils.AdvertisementDeserializer
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -18,7 +17,6 @@ object GsonModule {
     @Singleton
     fun provideGson(): Gson {
         return GsonBuilder()
-            .registerTypeAdapter(Advertisement::class.java, AdvertisementDeserializer())
             .create()
     }
 }

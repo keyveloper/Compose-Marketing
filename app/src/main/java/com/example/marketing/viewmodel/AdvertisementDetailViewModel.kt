@@ -82,47 +82,6 @@ class AdvertisementDetailViewModel @Inject constructor(
                 advertisementRepository.fetchById(id)
             }
 
-            when (advertisement) {
-                is Advertisement.AdvertisementGeneral -> {
-                    _title.value = advertisement.title
-                    _reviewType.value = advertisement.reviewType
-                    _channelType.value = advertisement.channelType
-                    _recruitmentNumber.value = advertisement.recruitmentNumber
-                    _itemName.value = advertisement.itemName
-                    _recruitmentStartAt.value = advertisement.recruitmentStartAt
-                    _recruitmentEndAt.value = advertisement.recruitmentEndAt
-                    _announcementAt.value = advertisement.announcementAt
-                    _reviewStartAt.value = advertisement.reviewStartAt
-                    _reviewEndAt.value = advertisement.reviewEndAt
-                    _endAt.value = advertisement.endAt
-                    _siteUrl.value = advertisement.siteUrl
-                    _itemInfo.value = advertisement.itemInfo
-                    _createdAt.value = advertisement.createdAt
-                    _updatedAt.value = advertisement.updatedAt
-                }
-                is Advertisement.AdvertisementWithLocation -> {
-                    _title.value = advertisement.title
-                    _reviewType.value = advertisement.reviewType
-                    _channelType.value = advertisement.channelType
-                    _recruitmentNumber.value = advertisement.recruitmentNumber
-                    _itemName.value = advertisement.itemName
-                    _recruitmentStartAt.value = advertisement.recruitmentStartAt
-                    _recruitmentEndAt.value = advertisement.recruitmentEndAt
-                    _announcementAt.value = advertisement.announcementAt
-                    _reviewStartAt.value = advertisement.reviewStartAt
-                    _reviewEndAt.value = advertisement.reviewEndAt
-                    _endAt.value = advertisement.endAt
-                    _siteUrl.value = advertisement.siteUrl
-                    _itemInfo.value = advertisement.itemInfo
-                    _createdAt.value = advertisement.createdAt
-                    _updatedAt.value = advertisement.updatedAt
-
-                    // 추가적으로 위치 정보를 업데이트
-                    _city.value = advertisement.city
-                    _district.value = advertisement.district
-                    // latitude, longitude 등 다른 위치 데이터도 필요 시 처리
-                }
-            }
 
         } catch (e: Exception) {
             throw e
