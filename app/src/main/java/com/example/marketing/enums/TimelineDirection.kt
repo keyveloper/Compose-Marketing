@@ -1,6 +1,6 @@
 package com.example.marketing.enums
 
-enum class TimeLineDirection {
+enum class TimelineDirection {
     INIT,
     NEXT,
     PREV

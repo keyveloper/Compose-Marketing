@@ -16,13 +16,13 @@ import androidx.compose.ui.graphics.*
 import androidx.navigation.NavController
 import com.example.marketing.enums.MainScreenStatus
 import com.example.marketing.enums.ScreenRoute
-import com.example.marketing.enums.UserStatus
+import com.example.marketing.enums.UserType
 
 @Composable
 fun MainBottomBar(
     modifier: Modifier = Modifier,
     onStatusChange: (MainScreenStatus) -> Unit,
-    userStatus: UserStatus
+    userType: UserType
 ) {
     Box(
         modifier = modifier
@@ -64,8 +64,8 @@ fun MainBottomBar(
 
 
             // change when advertiser
-            when (userStatus) {
-                UserStatus.INFLUENCER -> {
+            when (userType) {
+                UserType.INFLUENCER -> {
                     IconButton(
                         onClick = { onStatusChange(MainScreenStatus.FOLLOW) }
                     ) {
@@ -77,7 +77,7 @@ fun MainBottomBar(
                     }
                 }
 
-                UserStatus.ADVERTISER -> {
+                UserType.ADVERTISER_COMMON -> {
                     IconButton(
                         onClick = { onStatusChange(MainScreenStatus.ADVERTISER_WRITE) }
                     ) {

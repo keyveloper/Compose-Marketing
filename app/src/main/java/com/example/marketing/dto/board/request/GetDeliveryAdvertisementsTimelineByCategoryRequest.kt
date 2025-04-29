@@ -1,11 +1,11 @@
 package com.example.marketing.dto.board.request
 
 import com.example.marketing.enums.DeliveryCategory
-import com.example.marketing.enums.TimeLineDirection
+import com.example.marketing.enums.TimelineDirection
 
 data class GetDeliveryAdvertisementsTimelineByCategoryRequest(
     val pivotTime: Long,
-    val timeLineDirection: TimeLineDirection,
+    val timelineDirection: TimelineDirection,
     val deliveryCategory: DeliveryCategory
 ) {
     companion object {
@@ -14,7 +14,7 @@ data class GetDeliveryAdvertisementsTimelineByCategoryRequest(
         ): GetDeliveryAdvertisementsTimelineByCategoryRequest {
             return GetDeliveryAdvertisementsTimelineByCategoryRequest(
                 pivotTime = requestModel.pivotTime,
-                timeLineDirection = requestModel.timeLineDirection,
+                timelineDirection = requestModel.timelineDirection,
                 deliveryCategory = requestModel.deliveryCategory
             )
         }

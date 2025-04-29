@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.marketing.enums.ApiCallStatus
 import com.example.marketing.enums.ScreenRoute
-import com.example.marketing.enums.UserStatus
+import com.example.marketing.enums.UserType
 import com.example.marketing.viewmodel.AdvertiserLoginViewModel
 
 @Composable
@@ -38,14 +38,20 @@ fun AdvertiserLoginScreen(
     val password = viewmodel.password.collectAsState()
     val apiCallStatus = viewmodel.apiCallStatus.collectAsState()
     val advertiserId = viewmodel.advertiserId.collectAsState()
+    val loginStatus = viewmodel.loginStatus.collectAsState()
 
     LaunchedEffect(apiCallStatus.value) {
-        if (apiCallStatus.value == ApiCallStatus.SUCCESS && advertiserId.value != -1L) {
+        if (apiCallStatus.value == ApiCallStatus.SUCCESS && loginStatus.value) {
             navController.navigate(
                 "${ScreenRoute.MAIN_INIT.route}/" +
-                        "${UserStatus.ADVERTISER.ordinal}/" +
+                        "${UserType.ADVERTISER_COMMON}/" +
                         "${advertiserId.value}"
-            )
+            ) {
+                popUpTo(ScreenRoute.AUTH_ADVERTISER_LOGIN.route) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
         }
     }
 

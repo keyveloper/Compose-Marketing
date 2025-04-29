@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.marketing.dto.user.request.LoginAdvertiser
 import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.exception.BusinessException
 import com.example.marketing.repository.AdvertiserRepository
+import com.example.marketing.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdvertiserLoginViewModel @Inject constructor(
-    private val advertiserRepository: AdvertiserRepository
+    private val advertiserRepository: AdvertiserRepository,
+    private val authRepository: AuthRepository
 ): ViewModel() {
 
     private val _loginId = MutableStateFlow ("")
@@ -24,8 +27,11 @@ class AdvertiserLoginViewModel @Inject constructor(
     private val _password = MutableStateFlow ("")
     val password = _password.asStateFlow()
 
-    private val _advertiserId = MutableStateFlow (-1L)
+    private val _advertiserId:MutableStateFlow<Long?> = MutableStateFlow (null)
     val advertiserId = _advertiserId.asStateFlow()
+
+    private val _loginStatus = MutableStateFlow(false)
+    val loginStatus = _loginStatus.asStateFlow()
 
     private val _apiCallStatus = MutableStateFlow (ApiCallStatus.IDLE)
     val apiCallStatus = _apiCallStatus.asStateFlow()
@@ -46,16 +52,35 @@ class AdvertiserLoginViewModel @Inject constructor(
         _apiCallStatus.value = status
     }
 
+    private fun updateLoginStatus(status: Boolean) {
+        _loginStatus.value = true
+    }
+
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             updateApiCallStatus(ApiCallStatus.LOADING)
-            val result = advertiserRepository.login(
-                LoginAdvertiser.of(_loginId.value, _password.value)
-            )
+            try {
+                val result = advertiserRepository.login(
+                    LoginAdvertiser.of(_loginId.value, _password.value)
+                )
 
-            withContext(Dispatchers.Main) {
-                updateAdvertiserId(result)
-                updateApiCallStatus(ApiCallStatus.SUCCESS)
+                withContext(Dispatchers.Main) {
+                    updateAdvertiserId(result.id)
+                    updateApiCallStatus(ApiCallStatus.SUCCESS)
+                    updateLoginStatus(true)
+                    authRepository.saveToken(result.jwt)
+                }
+
+            } catch (e: BusinessException) {
+                withContext(Dispatchers.Main) {
+                    updateApiCallStatus(ApiCallStatus.SUCCESS)
+                    updateLoginStatus(false)
+                    // optionally save error message
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    updateApiCallStatus(ApiCallStatus.FAILED)
+                }
             }
         } // how to catch the error?
     }

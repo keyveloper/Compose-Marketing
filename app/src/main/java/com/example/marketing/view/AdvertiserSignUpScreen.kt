@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marketing.enums.AdvertiserSignUpStatus
 import com.example.marketing.enums.AdvertiserType
-import com.example.marketing.enums.UserType
 import com.example.marketing.viewmodel.AdvertiserSignUpViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng

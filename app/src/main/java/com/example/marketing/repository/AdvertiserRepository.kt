@@ -4,6 +4,7 @@ import com.example.marketing.api.AdvertiserApi
 import com.example.marketing.dto.user.request.LoginAdvertiser
 import com.example.marketing.dto.user.request.SignUpAdvertiser
 import com.example.marketing.domain.AdvertiserProfileResult
+import com.example.marketing.dto.user.response.LoginAdvertiserInfo
 import com.example.marketing.exception.BusinessException
 import javax.inject.Inject
 
@@ -20,13 +21,16 @@ class AdvertiserRepository @Inject constructor(
         }
     }
 
-    suspend fun login(requestModel: LoginAdvertiser): Long {
+    suspend fun login(requestModel: LoginAdvertiser): LoginAdvertiserInfo {
         val response = advertiserApi.login(requestModel)
 
         return if (response.frontErrorCode != 20000) {
             throw BusinessException(response.errorMessage)
         } else {
-            response.advertiserId
+            LoginAdvertiserInfo(
+                response.jwt,
+                response.advertiserId
+            )
         }
     }
 

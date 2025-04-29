@@ -25,13 +25,6 @@ class AdvertiserApi @Inject constructor(
         }.body()
     }
 
-    suspend fun login(requestModel: LoginAdvertiser): LoginAdvertiserResponse {
-        val request = LoginAdvertiserRequest.of(requestModel)
-        return client.post("/test/entry/advertiser") {
-            setBody(request)
-        }.body()
-    }
-
     suspend fun fetchProfile(advertiserId: Long): AdvertiserProfileResponse {
         return client.get("/test/advertiser/profile") {
             parameter("advertiserId", advertiserId)

@@ -9,12 +9,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.marketing.enums.ScreenRoute
-import com.example.marketing.enums.UserStatus
+import com.example.marketing.enums.UserType
 import com.example.marketing.view.AdvertiserLoginScreen
 import com.example.marketing.view.AdvertiserSignUpScreen
 import com.example.marketing.view.AuthHealthCheckScreen
 import com.example.marketing.view.AuthHomeScreen
 import com.example.marketing.view.InfluencerLoginScreen
+import com.example.marketing.view.MainInItScreen
 import com.example.marketing.view.MainScreen
 import com.example.marketing.view.SplashV1Screen
 
@@ -32,11 +33,7 @@ fun AppNavGraph(
             route = ScreenRoute.SPLASH.route) {
 
             composable(ScreenRoute.SPLASH_v1.route) {
-                SplashV1Screen(
-                    onSplashDone = {
-                        navController.navigate(ScreenRoute.AUTH.route)
-                    }
-                )
+                SplashV1Screen(navController)
             }
         }
 
@@ -81,23 +78,28 @@ fun AppNavGraph(
             route = ScreenRoute.MAIN.route
         ) {
             composable(ScreenRoute.MAIN_INIT.route) {
-                // do nothing
+                // do noting
             }
 
             composable(
-                route = ScreenRoute.MAIN_INIT.route + "/{userTypeOrdinal}/{userId}",
+                route = ScreenRoute.MAIN_INIT.route + "/{userType}/{userId}",
                 arguments = listOf(
-                    navArgument("userTypeOrdinal") { type = NavType.IntType },
+                    navArgument("userType") { type = NavType.StringType },
                     navArgument("userId") { type = NavType.LongType }
                     )
             ) { backStackEntry ->
-                val userTypeOrdinal = backStackEntry.arguments?.getInt("userTypeOrdinal") ?: -1
-                val userId = backStackEntry.arguments?.getLong("userId") ?: -1L
+                val userTypeArg = backStackEntry.arguments?.getString("userType")
+                val userType = try {
+                    enumValueOf<UserType>(userTypeArg ?: "")
+                } catch (e: IllegalArgumentException) {
+                    UserType.ADVERTISER_COMMON // fallback
+                }
+                val userId = backStackEntry.arguments?.getLong("userId")
+                    ?: -1L
                 MainScreen(
-                    userInitStatus = UserStatus.entries[userTypeOrdinal],
+                    userInitType = userType,
                     initUserId = userId)
             }
-
         }
     }
 }

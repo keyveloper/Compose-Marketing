@@ -6,7 +6,7 @@ import com.example.marketing.domain.AdvertisementDelivery
 import com.example.marketing.dto.board.request.GetAllDeliveriesTimelineByCategory
 import com.example.marketing.enums.ApiCallStatus
 import com.example.marketing.enums.DeliveryCategory
-import com.example.marketing.enums.TimeLineDirection
+import com.example.marketing.enums.TimelineDirection
 import com.example.marketing.repository.AdvertisementDeliveryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +60,7 @@ class DeliveryViewModel @Inject constructor(
                 requestModel = GetAllDeliveriesTimelineByCategory.of(
                     deliveryCategory = currentCategoryStatus.value,
                     pivotTime = System.currentTimeMillis(),
-                    timeLineDirection = TimeLineDirection.INIT
+                    timelineDirection = TimelineDirection.INIT
                 )
             )
 
@@ -80,7 +80,7 @@ class DeliveryViewModel @Inject constructor(
                     pivotTime = liveAdvertisements.value.minOfOrNull {
                         it.advertisementGeneral.createdAt
                     } ?: System.currentTimeMillis(),
-                    timeLineDirection = TimeLineDirection.NEXT
+                    timelineDirection = TimelineDirection.NEXT
                 )
             )
             withContext(Dispatchers.Main) {
@@ -98,7 +98,7 @@ class DeliveryViewModel @Inject constructor(
                     pivotTime = liveAdvertisements.value.minOfOrNull {
                         it.advertisementGeneral.createdAt
                     } ?: System.currentTimeMillis(),
-                    timeLineDirection = TimeLineDirection.PREV
+                    timelineDirection = TimelineDirection.PREV
                 )
             )
 

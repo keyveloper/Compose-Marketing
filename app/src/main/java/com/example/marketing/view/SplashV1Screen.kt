@@ -8,15 +8,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.ui.color.PastelRose
 
 @Composable
 fun SplashV1Screen(
-    onSplashDone: () -> Unit
+    navController: NavController
 ) {
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(3000)
-        onSplashDone()
+        navController.navigate(ScreenRoute.AUTH.route) {
+            popUpTo(ScreenRoute.SPLASH_v1.route) {
+                inclusive = true
+            }
+        }
     }
 
     // draw Splash Screen !

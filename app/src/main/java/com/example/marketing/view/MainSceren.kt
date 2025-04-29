@@ -13,7 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.marketing.enums.MainScreenStatus
-import com.example.marketing.enums.UserStatus
+import com.example.marketing.enums.UserType
 import com.example.marketing.ui.component.bar.MainBottomBar
 import com.example.marketing.ui.component.bar.MainTopBar
 import com.example.marketing.viewmodel.MainViewModel
@@ -21,15 +21,15 @@ import com.example.marketing.viewmodel.MainViewModel
 @Composable
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
-    userInitStatus: UserStatus,
+    userInitType: UserType,
     initUserId: Long
 ) {
     val screenStatus = viewModel.screenStatus.collectAsState()
-    val userStatus = viewModel.userStatus.collectAsState()
+    val userType = viewModel.userType.collectAsState()
     val userId = viewModel.userId.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.updateUserStatus(userInitStatus)
+        viewModel.updateUserType(userInitType)
         viewModel.updateUserId(initUserId)
     }
 
@@ -76,22 +76,22 @@ fun MainScreen(
             }
 
             MainScreenStatus.PROFILE -> {
-                when (userStatus.value) {
-                    UserStatus.INFLUENCER -> {
+                when (userType.value) {
+                    UserType.INFLUENCER -> {
                         InfluencerProfileScreen()
                     }
 
-                    UserStatus.ADVERTISER -> {
+                    UserType.ADVERTISER_COMMON -> {
                         AdvertiserProfileScreen(
                             initAdvertiserId = userId.value
                         )
                     }
 
-                    UserStatus.ADMIN -> {
+                    UserType.ADMIN -> {
 
                     }
 
-                    UserStatus.ADVERTISER_BRAND -> {
+                    else -> {
 
                     }
                 }
@@ -131,7 +131,7 @@ fun MainScreen(
             onStatusChange = { status ->
                 viewModel.updateScreenStatus(status)
             },
-            userStatus = userStatus.value
+            userType = userType.value
         )
     }
 }
