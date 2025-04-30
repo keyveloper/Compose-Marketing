@@ -23,8 +23,8 @@ class AuthRepository @Inject constructor(
 
     suspend fun saveToken(jwt: String) = dao.upsert(JwtTokenEntity(token = jwt))
 
-    suspend fun validateToken(token: String): ValidateTokenResult? {
-        val response = authApi.validateToken(token)
+    suspend fun validateToken(): ValidateTokenResult? {
+        val response = authApi.validateToken()
 
         return if (response.frontErrorCode == 20000) {
             response.validateResult

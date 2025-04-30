@@ -22,6 +22,7 @@ fun SplashV1Screen(
             popUpTo(ScreenRoute.SPLASH_v1.route) {
                 inclusive = true
             }
+            launchSingleTop = true
         }
     }
 

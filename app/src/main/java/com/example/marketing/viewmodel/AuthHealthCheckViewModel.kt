@@ -56,7 +56,7 @@ class AuthHealthCheckViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val result = authRepository.validateToken(token)
+            val result = authRepository.validateToken()
             withContext(Dispatchers.Main) {
                 if (result == null) {
                     Log.i("authHealthCheckVm", "validate failed → null result")

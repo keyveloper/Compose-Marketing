@@ -44,7 +44,7 @@ object KtorModule {
 
                 url {
                     protocol = URLProtocol.HTTP
-                    host = "192.168.103.89"
+                    host = "192.168.51.89"
                     port = 8080
                 }
                 header("User-Agent", "Marketing app")
@@ -57,6 +57,8 @@ object KtorModule {
                     }
                 }
                 level = LogLevel.ALL
+
+                sanitizeHeader { false }
             }
         }
     }
