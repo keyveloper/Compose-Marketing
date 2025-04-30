@@ -8,4 +8,15 @@ data class SaveAdvertisementDelivery(
     val saveAdvertisementGeneral: SaveAdvertisementGeneral,
 
     val categories: List<DeliveryCategory>,
-)
+) {
+    companion object {
+        fun of(
+            general: SaveAdvertisementGeneral,
+            categories: List<DeliveryCategory>
+        ): SaveAdvertisementDelivery =
+            SaveAdvertisementDelivery(
+                saveAdvertisementGeneral = general,
+                categories = categories
+            )
+    }
+}

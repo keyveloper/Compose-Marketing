@@ -25,7 +25,8 @@ import java.util.Locale
 @Composable
 fun RangeDatePicker(
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDateRangeSelected: (Long, Long) -> Unit
 ) {
     var showPicker by remember { mutableStateOf(false) }
     val state = rememberDateRangePickerState()
@@ -34,17 +35,18 @@ fun RangeDatePicker(
 
 
     OutlinedTextField(
+        modifier = modifier,
         value = buildString {
             append(
                 selectedStart?.let {
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(it))
-                } ?: "시작"
+                } ?: "시작일"
             )
-            append(" ~ ")
+            append(" - ")
             append(
                 selectedEnd?.let {
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(it))
-                } ?: "종료"
+                } ?: "종료일"
             )
         },
         onValueChange = {},
@@ -68,13 +70,14 @@ fun RangeDatePicker(
                         if (start != null && end != null) {
                             selectedStart = start
                             selectedEnd = end
+                            onDateRangeSelected(start, end)
                         }
                         showPicker = false
                     }
                 ) {
                     Text("확인")
                 }
-            }
+            },
         ) {
             DateRangePicker(state = state)
         }

@@ -25,7 +25,8 @@ import java.util.Locale
 @Composable
 fun SingleDatePicker(
     label: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDateSelected: (Long) -> Unit
 ) {
     var showPicker by remember { mutableStateOf(false) }
     val state = rememberDatePickerState(initialSelectedDateMillis = null)
@@ -59,6 +60,7 @@ fun SingleDatePicker(
                     onClick = {
                         state.selectedDateMillis?.let {
                             selectedDate = it
+                            onDateSelected(it)
                         }
                         showPicker = false
                     }
