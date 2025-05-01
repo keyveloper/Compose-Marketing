@@ -6,10 +6,13 @@ import com.example.marketing.dto.board.response.MakeNewAdvertisementImageRespons
 import com.example.marketing.dto.board.request.SaveAdvertisementImageMetadata
 import com.example.marketing.dto.board.request.SetAdvertisementThumbnail
 import com.example.marketing.dto.board.request.SetAdvertisementThumbnailRequest
+import com.example.marketing.dto.board.response.DeleteAdImageResponse
 import com.example.marketing.dto.board.response.GetAllAdImageMetadataResponse
 import com.example.marketing.dto.board.response.SetAdvertisementThumbnailResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
@@ -29,7 +32,7 @@ class AdvertisementImageApi @Inject constructor(
     private val jwtTokenDao: JwtTokenDao
 ) {
 
-    suspend fun save(
+    suspend fun upload(
         requestModel: SaveAdvertisementImageMetadata,
         binaryImage: ByteArray,
     ): MakeNewAdvertisementImageResponse {
@@ -44,7 +47,6 @@ class AdvertisementImageApi @Inject constructor(
                     Json.encodeToString(MakeNewAdvertisementImageRequest.of(requestModel)),
                     Headers.build {
                         append(HttpHeaders.ContentType, "application/json")
-                        append(HttpHeaders.ContentDisposition, "form-data; name=\"meta\"")
                     }
                 )
 
@@ -55,19 +57,20 @@ class AdvertisementImageApi @Inject constructor(
                         append(HttpHeaders.ContentType, requestModel.imageType)
                         append(
                             HttpHeaders.ContentDisposition,
-                            "form-data; name=\"file\"; " +
-                                    "filename=\"${requestModel.originalFileName}\"")
+                            """filename="${requestModel.originalFileName}""""
+                        )
                     }
                 )
             }
         ) {
-            setBody {
-                MakeNewAdvertisementImageRequest.of(requestModel)
-            }
+            bearerAuth(token)
+        }.body()
+    }
 
-            headers {
-                append(HttpHeaders.Authorization, token)
-            }
+    suspend fun withDrawUploading(metadataId: Long): DeleteAdImageResponse {
+        val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
+        return httpClient.delete("/advertisement/image/$metadataId") {
+            bearerAuth(token)
         }.body()
     }
 
@@ -80,9 +83,7 @@ class AdvertisementImageApi @Inject constructor(
                 SetAdvertisementThumbnailRequest.of(requestModel)
             }
 
-            headers {
-                append(HttpHeaders.Authorization, token)
-            }
+            bearerAuth(token)
         }.body()
     }
 

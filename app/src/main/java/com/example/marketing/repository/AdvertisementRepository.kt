@@ -1,25 +1,30 @@
 package com.example.marketing.repository
 
+import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import com.example.marketing.api.AdvertisementApi
+import com.example.marketing.api.AdvertisementDraftApi
 import com.example.marketing.api.AdvertisementImageApi
 import com.example.marketing.domain.Advertisement
-import com.example.marketing.dto.board.request.AdvertisementWithImageAndKeyword
+import com.example.marketing.dto.board.request.AdvertisementWithKeyword
 import com.example.marketing.dto.board.request.SaveAdvertisementDelivery
 import com.example.marketing.dto.board.request.SaveAdvertisementGeneral
+import com.example.marketing.dto.board.request.SaveAdvertisementImageMetadata
+import com.example.marketing.dto.board.response.MakeNewAdvertisementImageResult
 import com.example.marketing.enums.ReviewType
 import com.example.marketing.exception.BusinessException
 import javax.inject.Inject
 
 class AdvertisementRepository @Inject constructor(
-    private val context: Context,
     private val advertisementApi: AdvertisementApi,
     private val advertisementImageApi: AdvertisementImageApi,
+    private val advertisementDraftApi: AdvertisementDraftApi
     // keyword Api added
 ) {
-    suspend fun save(businessModel: AdvertisementWithImageAndKeyword) {
+    suspend fun upload(businessModel: AdvertisementWithKeyword): Long {
         val requestModel = SaveAdvertisementGeneral.of(
             title = businessModel.commonFields.title,
             reviewType = businessModel.commonFields.reviewType,
@@ -51,13 +56,9 @@ class AdvertisementRepository @Inject constructor(
             }
         }
 
+        return createdAdvertisementId
     }
-
-    suspend fun uploadImage(uris: List<Uri>) {
-        for (uri in uris) {
-            val mimeType = context
-        }
-    }
+    
 
     suspend fun fetchById(id: Long): Advertisement {
         val response = advertisementApi.fetchById(id)

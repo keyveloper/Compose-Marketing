@@ -14,6 +14,9 @@ plugins {
     // room
     id("androidx.room")
     id("com.google.devtools.ksp")
+
+    // multipart/from-dat
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.10"
 }
 
 kapt {
@@ -80,6 +83,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -133,4 +137,8 @@ dependencies {
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
     ksp("androidx.room:room-compiler:$room_version")
+
+    // json for multipart/from-data
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+
 }
