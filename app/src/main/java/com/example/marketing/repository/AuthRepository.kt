@@ -19,7 +19,7 @@ class AuthRepository @Inject constructor(
             .map { it?.token }
             .onEach { Log.i("authRepository", "onEach token = $it") }
 
-    suspend fun clear() = dao.clear()
+    suspend fun clearToken() = dao.clear()
 
     suspend fun saveToken(jwt: String) = dao.upsert(JwtTokenEntity(token = jwt))
 

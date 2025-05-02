@@ -14,22 +14,56 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.enums.ScreenRoute
+import com.example.marketing.enums.UserType
 import com.example.marketing.viewmodel.InfluencerLoginViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun InfluencerLoginScreen(
-    influencerLoginViewModel: InfluencerLoginViewModel = hiltViewModel()
+    viewModel: InfluencerLoginViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    val loginId = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    // ------------✍️ input value -------------
+    val loginId by viewModel.loginId.collectAsState()
+    val password by viewModel.password.collectAsState()
+
+    // ------------🔃 status ---------------
+    val loginApiComposable by viewModel.loginApiCallStatus.collectAsState()
+
+    // ----------- 🚀 from server value -----------
+    val coroutineScope = rememberCoroutineScope()
+    val influencerId by viewModel.influencerId.collectAsState()
+
+    // ----------- 🔭 Launched Effect -------------
+    LaunchedEffect(loginApiComposable) {
+        if (loginApiComposable == ApiCallStatus.SUCCESS) {
+            navController.navigate(
+                "${ScreenRoute.MAIN_INIT.route}/" +
+                        "${UserType.INFLUENCER}/" +
+                        "${influencerId}"
+            ) {
+                popUpTo(ScreenRoute.AUTH_INFLUENCER_LOGIN.route) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -42,8 +76,8 @@ fun InfluencerLoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
-                value = loginId.value,
-                onValueChange = { loginId.value = it },
+                value = loginId ?: "",
+                onValueChange = { viewModel.updateLoginId(it) },
                 label = { Text("아이디") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -52,8 +86,8 @@ fun InfluencerLoginScreen(
             )
 
             OutlinedTextField(
-                value = password.value,
-                onValueChange = { password.value = it },
+                value = password ?: "",
+                onValueChange = { viewModel.updatePassword(it) },
                 label = { Text("비밀번호") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -63,7 +97,11 @@ fun InfluencerLoginScreen(
             )
 
             Button(
-                onClick = { influencerLoginViewModel.login() }, // make dto
+                onClick = {
+                    coroutineScope.launch {
+                        viewModel.login()
+                    }
+                }, // make dto
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
@@ -71,7 +109,8 @@ fun InfluencerLoginScreen(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF0f4c81), // classic blue
                     contentColor = Color.White
-                )
+                ),
+                enabled = viewModel.checkApiAllowed()
             ) {
                 Text("Login")
             }

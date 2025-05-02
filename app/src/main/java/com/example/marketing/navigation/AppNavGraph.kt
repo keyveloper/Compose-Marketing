@@ -65,7 +65,9 @@ fun AppNavGraph(
             }
 
             composable(ScreenRoute.AUTH_INFLUENCER_LOGIN.route) {
-                InfluencerLoginScreen()
+                InfluencerLoginScreen(
+                    navController = navController
+                )
             }
 
             composable(ScreenRoute.AUTH_ADVERTISER_SIGNUP.route) {
