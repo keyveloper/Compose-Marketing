@@ -26,19 +26,7 @@ class AdvertisementRepository @Inject constructor(
 ) {
     suspend fun upload(businessModel: AdvertisementWithKeyword): Long {
         val requestModel = SaveAdvertisementGeneral.of(
-            title = businessModel.commonFields.title,
-            reviewType = businessModel.commonFields.reviewType,
-            channelType = businessModel.commonFields.channelType,
-            itemName = businessModel.commonFields.itemName,
-            itemInfo = businessModel.commonFields.itemInfo,
-            recruitmentNumber = businessModel.commonFields.recruitmentNumber,
-            recruitmentStartAt = businessModel.commonFields.recruitmentStartAt,
-            recruitmentEndAt = businessModel.commonFields.recruitmentEndAt,
-            announcementAt = businessModel.commonFields.announcementAt,
-            reviewStartAt = businessModel.commonFields.reviewStartAt,
-            reviewEndAt = businessModel.commonFields.reviewEndAt,
-            endAt = businessModel.commonFields.endAt,
-            siteUrl = businessModel.commonFields.siteUrl
+            businessModel.commonFields
         )
 
         val createdAdvertisementId = when (businessModel.commonFields.reviewType) {

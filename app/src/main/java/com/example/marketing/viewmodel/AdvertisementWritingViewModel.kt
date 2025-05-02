@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.marketing.domain.AdvertisementDraft
 import com.example.marketing.domain.WritingImageItem
 import com.example.marketing.dto.board.request.AdvertisementCommonFields
@@ -20,6 +21,7 @@ import com.example.marketing.repository.AdvertisementRepository
 import com.example.marketing.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,6 +95,10 @@ class AdvertisementWritingViewModel @Inject constructor(
     private val _keywords = MutableStateFlow (setOf<String>())
     val keywords = _keywords.asStateFlow()
 
+    // ------------------ API STATUS -----------------------
+    private val _saveApiStatus = MutableStateFlow(false)
+    val saveApiStatus = _saveApiStatus.asStateFlow()
+
     // ------------------ UPDATE METHODS ------------------
     private fun updateDraft(draft: AdvertisementDraft) = run { _draft.value = draft }
 
@@ -122,9 +128,20 @@ class AdvertisementWritingViewModel @Inject constructor(
 
     fun updateReviewEndAt(value: Long?) = run { _reviewEndAt.value = value }
 
+    fun updateThumbnail(item: WritingImageItem?) = run { _thumbnail.value = item }
+
+    fun updateSaveApiStatus(isSaved: Boolean) = run { _saveApiStatus.value = isSaved }
+
     fun addImageUris(items: List<WritingImageItem>) = run { _imageItems.update { it + items }}
 
     fun addImageItem(item: WritingImageItem) = run { _imageItems.update { it + item } }
+
+    fun addCategory(category: DeliveryCategory) = run {
+        _categories.update { it + category}
+        Log.i("adWritingViewModel", "now items: ${categories.value}")
+    }
+
+    fun deleteCategory(category: DeliveryCategory) = run { _categories.value -= category }
 
     fun deleteImageItemByUri(targetUri: Uri) = run {
         _imageItems.update { current ->
@@ -143,7 +160,34 @@ class AdvertisementWritingViewModel @Inject constructor(
     }
 
     fun checkEssentialFields(): Boolean {
-        return true
+        return _thumbnail.value != null
+    }
+
+    fun resetPage() {
+        _draft.value = null
+        _writingStatus.value = AdWritingStatus.INIT
+
+        _title.value = ""
+        _itemName.value = ""
+        _itemInfo.value = null
+        _siteUrl.value = null
+
+        _channelType.value = ChannelType.BLOGGER
+        _reviewType.value = ReviewType.BUY
+
+        _recruitmentNumber.value = null
+        _recruitStartAt.value = null
+        _recruitEndAt.value = null
+        _announcementAt.value = null
+        _reviewStartAt.value = null
+        _reviewEndAt.value = null
+
+        _categories.value = emptyList()
+        _thumbnail.value = null
+        _imageItems.value = emptyList()
+        _keywords.value = emptySet()
+
+        _saveApiStatus.value = false
     }
 
     // ------------------ API METHODS ------------------
@@ -175,17 +219,19 @@ class AdvertisementWritingViewModel @Inject constructor(
                 )
 
                 val domain = advertisementImageRepository.uploadImage(uri, draft.value!!.id)
+                Log.i("adWritingVm", "uploadImg-domain(result: $domain")
 
                 withContext(Dispatchers.Main) {
-                    _imageItems.update { list ->
-                        list.map { item ->
-                            if (item.localUri == uri) item.copy(
-                                domain = domain,
-                                uploaded = true
-                            )
-                            else item
-                        }
+                    val updatedList = _imageItems.value.map { item ->
+                        if (item.localUri == uri) item.copy(
+                            domain = domain,
+                            uploaded = true
+                        ) else item
                     }
+
+                    _imageItems.value = updatedList
+                    val updatedItem = _imageItems.value.find { it.localUri == uri }
+                    Log.i("adWritingVm", "updatedItem = $updatedItem")
                 }
             }
         } catch (ex: BusinessException) {
@@ -200,7 +246,7 @@ class AdvertisementWritingViewModel @Inject constructor(
                 return
             }
             viewModelScope.launch(Dispatchers.IO) {
-                advertisementImageRepository.withdrawUpload(item.domain!!.id) // 🤔 always non-null?
+                advertisementImageRepository.withdrawUpload(item.domain!!.entityId) // 🤔 always non-null?
 
                 withContext(Dispatchers.Main) {
                     deleteImageItemByUri(item.localUri)
@@ -219,7 +265,7 @@ class AdvertisementWritingViewModel @Inject constructor(
         } else {
             try {
                 viewModelScope.launch(Dispatchers.IO) {
-                    advertisementRepository.upload(
+                    val adId =  advertisementRepository.upload(
                         AdvertisementWithKeyword(
                             AdvertisementCommonFields(
                                 title = _title.value,
@@ -234,13 +280,28 @@ class AdvertisementWritingViewModel @Inject constructor(
                                 reviewStartAt = _reviewStartAt.value ?: 0L,
                                 reviewEndAt = _reviewEndAt.value ?: 0L,
                                 endAt = _reviewEndAt.value ?: 0L,
-                                siteUrl = _siteUrl.value
+                                siteUrl = _siteUrl.value,
+                                draftId = _draft.value?.id ?: -1L
                             ),
                             categories = _categories.value,
                             keywords = _keywords.value
                         )
                     )
+
+                    val setAdvertisementId = advertisementImageRepository.setAdvertisementId(
+                        _draft.value!!.id
+                    )
+
+                    if (setAdvertisementId) {
+                        advertisementImageRepository.setThumbnail(
+                            _thumbnail.value!!.domain!!.entityId, adId)
+
+                        withContext(Dispatchers.Main) {
+                            updateSaveApiStatus(true)
+                        }
+                    }
                 }
+
             } catch (ex: BusinessException) {
                 Log.i("adWritingViewModel", ex.message)
             }

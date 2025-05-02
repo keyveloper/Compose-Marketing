@@ -17,4 +17,7 @@ data class AdvertisementCommonFields(
     val reviewEndAt: Long,
     val endAt: Long,
     val siteUrl: String?,
+
+    // draft
+    val draftId: Long,
 )

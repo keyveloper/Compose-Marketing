@@ -17,36 +17,26 @@ data class SaveAdvertisementGeneral(
     val reviewEndAt: Long,
     val endAt: Long,
     val siteUrl: String?,
+    val draftId: Long
 ) {
     companion object {
         fun of(
-            title: String,
-            reviewType: ReviewType,
-            channelType: ChannelType,
-            itemName: String,
-            itemInfo: String?,
-            recruitmentNumber: Int,
-            recruitmentStartAt: Long,
-            recruitmentEndAt: Long,
-            announcementAt: Long,
-            reviewStartAt: Long,
-            reviewEndAt: Long,
-            endAt: Long,
-            siteUrl: String?
+            commonFields: AdvertisementCommonFields
         ): SaveAdvertisementGeneral = SaveAdvertisementGeneral(
-            title = title,
-            reviewType = reviewType,
-            channelType = channelType,
-            itemName = itemName,
-            itemInfo = itemInfo,
-            recruitmentNumber = recruitmentNumber,
-            recruitmentStartAt = recruitmentStartAt,
-            recruitmentEndAt = recruitmentEndAt,
-            announcementAt = announcementAt,
-            reviewStartAt = reviewStartAt,
-            reviewEndAt = reviewEndAt,
-            endAt = endAt,
-            siteUrl = siteUrl
+            title = commonFields.title,
+            reviewType = commonFields.reviewType,
+            channelType = commonFields.channelType,
+            itemName = commonFields.itemName,
+            itemInfo = commonFields.itemInfo,
+            recruitmentNumber = commonFields.recruitmentNumber,
+            recruitmentStartAt = commonFields.recruitmentStartAt,
+            recruitmentEndAt = commonFields.recruitmentEndAt,
+            announcementAt = commonFields.announcementAt,
+            reviewStartAt = commonFields.reviewStartAt,
+            reviewEndAt = commonFields.reviewEndAt,
+            endAt = commonFields.endAt,
+            siteUrl = commonFields.siteUrl,
+            draftId = commonFields.draftId
         )
     }
 }

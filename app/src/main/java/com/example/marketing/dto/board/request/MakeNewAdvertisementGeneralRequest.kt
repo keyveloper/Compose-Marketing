@@ -19,6 +19,8 @@ data class MakeNewAdvertisementGeneralRequest(
     val endAt: Long,
     val siteUrl: String?,
     val itemInfo: String?,
+
+    val draftId: Long,
 ) {
     companion object {
         fun of(
@@ -38,6 +40,7 @@ data class MakeNewAdvertisementGeneralRequest(
                 reviewEndAt = requestModel.reviewEndAt,
                 endAt = requestModel.endAt,
                 siteUrl = requestModel.siteUrl,
+                draftId = requestModel.draftId
             )
         }
     }

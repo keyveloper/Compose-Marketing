@@ -1,5 +1,6 @@
 package com.example.marketing.api
 
+import android.util.Log
 import com.example.marketing.dao.JwtTokenDao
 import com.example.marketing.dto.board.request.MakeNewAdvertisementImageRequest
 import com.example.marketing.dto.board.response.MakeNewAdvertisementImageResponse
@@ -9,6 +10,7 @@ import com.example.marketing.dto.board.request.SetAdvertisementThumbnailRequest
 import com.example.marketing.dto.board.response.DeleteAdImageResponse
 import com.example.marketing.dto.board.response.GetAllAdImageMetadataResponse
 import com.example.marketing.dto.board.response.SetAdvertisementThumbnailResponse
+import com.example.marketing.dto.board.response.SetImageAdvertisementResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
@@ -77,12 +79,20 @@ class AdvertisementImageApi @Inject constructor(
     suspend fun setThumbnail(requestModel: SetAdvertisementThumbnail)
     : SetAdvertisementThumbnailResponse {
         val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
+        Log.i("AdImageApi", "imgEntityId: ${requestModel.imageId}")
 
         return httpClient.post("/advertisement/image/thumbnail") {
-            setBody {
+            setBody(
                 SetAdvertisementThumbnailRequest.of(requestModel)
-            }
+            )
+            bearerAuth(token)
+        }.body()
+    }
 
+    suspend fun setAdvertisementId(draftId: Long): SetImageAdvertisementResponse {
+        val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
+
+        return httpClient.post("/advertisement/image/publisher/$draftId") {
             bearerAuth(token)
         }.body()
     }

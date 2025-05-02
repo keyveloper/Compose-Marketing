@@ -1,7 +1,7 @@
 package com.example.marketing.dto.board.request
 
 data class SetAdvertisementThumbnailRequest(
-    val entityId: Long,
+    val imageId: Long,
     val advertisementId: Long
 ) {
     companion object {
@@ -9,7 +9,7 @@ data class SetAdvertisementThumbnailRequest(
             requestModel: SetAdvertisementThumbnail
         ): SetAdvertisementThumbnailRequest =
             SetAdvertisementThumbnailRequest(
-                entityId = requestModel.entityId,
+                imageId = requestModel.imageId,
                 advertisementId = requestModel.advertisementId
             )
     }

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -12,9 +13,12 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -32,6 +37,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
@@ -66,6 +72,7 @@ import coil3.compose.AsyncImage
 import com.example.marketing.enums.AdWritingStatus
 import com.example.marketing.enums.ChannelIcon
 import com.example.marketing.enums.ChannelType
+import com.example.marketing.enums.DeliveryCategory
 import com.example.marketing.enums.ReviewIcon
 import com.example.marketing.enums.ReviewType
 import com.example.marketing.ui.color.CottonCandy
@@ -77,9 +84,11 @@ import com.example.marketing.ui.color.SeaGreen
 import com.example.marketing.ui.color.SoftGray
 import com.example.marketing.ui.color.SunOrange
 import com.example.marketing.ui.color.WatermelonSorbet
+import com.example.marketing.ui.component.DeliveryCategorySelectionCard
 import com.example.marketing.ui.component.RangeDatePicker
 import com.example.marketing.ui.component.SingleDatePicker
 import com.example.marketing.viewmodel.AdvertisementWritingViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -89,6 +98,7 @@ fun AdvertisementWritingScreen(
 ) {
     // ---------  👉 status  ----------------
     val writingStatus = viewModel.writingStatus.collectAsState()
+    val saveApiStatus = viewModel.saveApiStatus.collectAsState()
 
     // ----------  ✍️ info value ------------
     val title = viewModel.title.collectAsState()
@@ -97,17 +107,21 @@ fun AdvertisementWritingScreen(
     val itemName = viewModel.itemName.collectAsState()
     val itemInfo = viewModel.itemInfo.collectAsState()
     val recruitmentNumber = viewModel.recruitmentNumber.collectAsState()
-    val recruitStartAt = viewModel.recruitStartAt.collectAsState()
-    val recruitEndAt = viewModel.recruitEndAt.collectAsState()
-    val announcementAt = viewModel.announcementAt.collectAsState()
-    val reviewStartAt = viewModel.reviewStartAt.collectAsState()
-    val reviewEndAt = viewModel.reviewEndAt.collectAsState()
     val siteUrl = viewModel.siteUrl.collectAsState()
     val keywords = viewModel.keywords.collectAsState()
 
-    // ----------  📷 image ---------------
+    // ----------- categories ----------
+    var showCategorySelector by remember { mutableStateOf(false) }
+    val selectedCategory by remember {
+        mutableStateOf(DeliveryCategory.ALL)
+    }
+    val categories = viewModel.categories.collectAsState()
+
+    // ----------  📷 image & pager ---------------
     // image Picker
+    var selectedPage by remember { mutableStateOf(0) }
     val imageItems = viewModel.imageItems.collectAsState()
+    val thumbnail = viewModel.thumbnail.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -132,7 +146,19 @@ fun AdvertisementWritingScreen(
 
     // ---------- 📌 Launched Effect ------------
     LaunchedEffect(writingStatus) {
-        viewModel.issueDraft()
+        when (writingStatus.value) {
+            AdWritingStatus.INIT -> viewModel.issueDraft()
+            AdWritingStatus.SAVED -> {
+                viewModel.updateWritingStatus(AdWritingStatus.INIT)
+                viewModel.resetPage()
+            }
+
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(saveApiStatus) {
+        viewModel.updateWritingStatus(AdWritingStatus.SAVED)
     }
 
     // ------------🖼️ UI ----------------
@@ -163,7 +189,7 @@ fun AdvertisementWritingScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = 12.dp)
+                        .padding(vertical = 12.dp, horizontal = 6.dp)
                         .background(PastelBerry)
                 ) {
                     HorizontalPager(
@@ -174,15 +200,17 @@ fun AdvertisementWritingScreen(
                             .background(MintCream)
                     ) { currentPage ->
                         Log.i("advertisementWriting", "currentPage: $currentPage")
+                        selectedPage = currentPage
+                        val currentItem = imageItems.value.getOrNull(currentPage)
 
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(CottonCandy)
                         ) {
-                            val model = imageItems.value.getOrNull(currentPage)
+
                             AsyncImage(
-                                model = model,
+                                model = currentItem?.localUri,
                                 contentDescription = "Advertisement Image added",
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -202,20 +230,45 @@ fun AdvertisementWritingScreen(
                                     ),
                                 contentScale = ContentScale.Crop
                             )
+                        }
+                    }
 
-                            OutlinedIconButton(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        viewModel.withdrawUploadingImage(
-                                            imageItems.value.getOrNull(currentPage))
-                                    } },
-                                modifier = Modifier.align(Alignment.TopEnd)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "image delete icon "
+                    if (imageItems.value.isNotEmpty()) {
+                        val targetItem = imageItems.value.getOrNull(selectedPage)
+                        OutlinedIconButton(
+                            onClick = {
+                                coroutineScope.launch {
+                                    viewModel.withdrawUploadingImage(targetItem)
+                                } },
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "image delete icon "
+                            )
+                        }
+
+                        OutlinedButton(
+                            onClick = { viewModel.updateThumbnail(targetItem) },
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .width(120.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            colors = if (targetItem == thumbnail.value) {
+                                // Simulate filled appearance
+                                ButtonDefaults.outlinedButtonColors(
+                                    containerColor = Color(0xFFB2EBF2), // pastel blue or your themed fill
+                                    contentColor = Color.Black
                                 )
+                            } else {
+                                // Default outlined look
+                                ButtonDefaults.outlinedButtonColors()
                             }
+                        ) {
+                            if (targetItem == thumbnail.value) {
+                                Text("✅")
+                            } else Text("👉 썸네일")
                         }
                     }
                 }
@@ -403,6 +456,36 @@ fun AdvertisementWritingScreen(
                         }
                     }
 
+                    if (selectedReviewType.value == ReviewType.DELIVERY) {
+
+                        val interaction = remember { MutableInteractionSource() }
+
+                        Box(                                   // 1️⃣ clickable wrapper
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showCategorySelector = true }  // ← works
+                        ) {
+                            OutlinedTextField(                 // 2️⃣ decorate only
+                                value = if (categories.value.isEmpty())
+                                    "" else "선택됨 ${categories.value.size}개",
+                                onValueChange = {},            // no typing
+                                readOnly = true,
+                                enabled  = false,              // ⬅️ IMPORTANT: stop consuming touch
+                                label = { Text("👉 카테고리 선택하기") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+
+                        Log.i("adWritingView",
+                            "showCategorySelector: ${showCategorySelector}")
+                        if (showCategorySelector) {
+                            DeliveryCategorySelectionCard(
+                                onAdd = { viewModel.addCategory(selectedCategory) },
+                                onDelete = { viewModel.deleteCategory(selectedCategory) }
+                            )
+                        }
+                    }
 
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),

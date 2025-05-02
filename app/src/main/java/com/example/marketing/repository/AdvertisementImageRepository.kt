@@ -7,6 +7,7 @@ import android.util.Log
 import com.example.marketing.api.AdvertisementImageApi
 import com.example.marketing.domain.AdvertisementImage
 import com.example.marketing.dto.board.request.SaveAdvertisementImageMetadata
+import com.example.marketing.dto.board.request.SetAdvertisementThumbnail
 import com.example.marketing.exception.BusinessException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -34,6 +35,7 @@ class AdvertisementImageRepository @Inject constructor(
         )
 
         return if (response.frontErrorCode == 20000) {
+            Log.i("adImageRepo", "upload-result: ${response.result}")
             response.result
         } else {
             throw BusinessException(response.errorMessage)
@@ -46,5 +48,27 @@ class AdvertisementImageRepository @Inject constructor(
         if (response.frontErrorCode != 20000) {
             Log.i("adImageRepo", "withdrawFailed...")
         }
+    }
+
+    suspend fun setThumbnail(imageEntityId: Long, advertisementId: Long): Boolean {
+        val response = advertisementImageApi.setThumbnail(
+            SetAdvertisementThumbnail.of(
+                imageId = imageEntityId,
+                advertisementId = advertisementId
+            )
+        )
+
+        return if (response.frontErrorCode != 20000) {
+            Log.i("adImageRepo", "withdrawFailed...")
+            false
+        } else true
+    }
+
+    suspend fun setAdvertisementId(draftId: Long): Boolean {
+        val response = advertisementImageApi.setAdvertisementId(draftId)
+        return if (response.frontErrorCode != 20000) {
+            Log.i("adImageRepo", "withdrawFailed...")
+            false
+        } else true
     }
 }
