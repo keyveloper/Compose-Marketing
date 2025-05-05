@@ -3,7 +3,7 @@ package com.example.marketing.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.marketing.dto.user.request.SignUpAdvertiser
-import com.example.marketing.enums.AdvertiserSignUpStatus
+import com.example.marketing.enums.AdvertiserSignUpPart
 import com.example.marketing.enums.AdvertiserType
 import com.example.marketing.enums.ApiCallStatus
 import com.example.marketing.repository.AdvertiserRepository
@@ -20,12 +20,8 @@ import javax.inject.Inject
 class AdvertiserSignUpViewModel @Inject constructor(
     private val advertiserRepository: AdvertiserRepository
 ): ViewModel() {
-    private val _apiCallStatus = MutableStateFlow(ApiCallStatus.IDLE)
-    val apiCallStatus = _apiCallStatus.asStateFlow()
 
-    private val _liveStatus = MutableStateFlow(AdvertiserSignUpStatus.CREDENTIAL)
-    val liveStatus: StateFlow<AdvertiserSignUpStatus> = _liveStatus.asStateFlow()
-
+    // ------------✍️ input value -------------
     private val _loginId = MutableStateFlow("")
     val loginId: StateFlow<String> = _loginId.asStateFlow()
 
@@ -41,8 +37,24 @@ class AdvertiserSignUpViewModel @Inject constructor(
     private val _homepageUrl = MutableStateFlow<String?> (null)
     val homepageUrl = _homepageUrl.asStateFlow()
 
-    fun updateLiveStatus(status: AdvertiserSignUpStatus) {
-        _liveStatus.value = status
+    private val _email = MutableStateFlow<String?> (null)
+    val email = _email.asStateFlow()
+    
+    private val _contact = MutableStateFlow<String?> (null)
+    val contact = _contact.asStateFlow()
+
+    // ------------🔃 status ------------
+
+    private val _SignUpApiCallStatus = MutableStateFlow(ApiCallStatus.IDLE)
+    val SignUpApiCallStatus = _SignUpApiCallStatus.asStateFlow()
+
+    private val _part = MutableStateFlow(AdvertiserSignUpPart.CREDENTIAL)
+    val part: StateFlow<AdvertiserSignUpPart> = _part.asStateFlow()
+
+
+    // ----------- 🎮 update function-------------
+    fun updatePart(status: AdvertiserSignUpPart) {
+        _part.value = status
     }
 
     fun updateLoginId(id: String) {
@@ -65,25 +77,49 @@ class AdvertiserSignUpViewModel @Inject constructor(
         _companyName.value = name
     }
 
-    private fun updateApiCallStatus(status: ApiCallStatus) {
-        _apiCallStatus.value = status
+    fun updateEmail(email: String) {
+        _email.value = email
     }
 
+    fun updateContact(contact: String) {
+        _contact.value = contact
+    }
+
+    private fun updateSignUpApiCallStatus(status: ApiCallStatus) {
+        _SignUpApiCallStatus.value = status
+    }
+
+    // -------------🔍 inspection -----------
+
+    fun checkApiAllowed(): Boolean {
+        return _loginId.value.isNotEmpty() && _password.value.isNotEmpty() &&
+                _companyName.value.isNotEmpty() && _email.value != null &&
+                _contact.value != null
+    }
+
+
     fun signUp() {
-        val signUpAdvertiser = SignUpAdvertiser(
-            loginId = _loginId.value,
-            password = _password.value,
-            homepageUrl = null,
-            companyName = _companyName.value,
-            advertiserType = _advertiserType.value
-        )
 
-        viewModelScope.launch(Dispatchers.IO) {
-            updateApiCallStatus(ApiCallStatus.LOADING)
-            advertiserRepository.signUp(signUpAdvertiser)
+        if (checkApiAllowed()) {
+            val signUpAdvertiser = SignUpAdvertiser(
+                loginId = _loginId.value,
+                password = _password.value,
+                homepageUrl = _homepageUrl.value,
+                companyName = _companyName.value,
+                advertiserType = _advertiserType.value,
+                email = _email.value!!,
+                contact = _contact.value!!
+            )
 
-            withContext(Dispatchers.Main) {
-                updateApiCallStatus(ApiCallStatus.SUCCESS)
+            viewModelScope.launch(Dispatchers.IO) {
+                updateSignUpApiCallStatus(ApiCallStatus.LOADING)
+                val createdId = advertiserRepository.signUp(signUpAdvertiser)
+
+                if (createdId != null) {
+                    withContext(Dispatchers.Main) {
+                        updateSignUpApiCallStatus(ApiCallStatus.SUCCESS)
+                    }
+                }
             }
         }
     }

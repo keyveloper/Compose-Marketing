@@ -15,6 +15,7 @@ import com.example.marketing.view.AdvertiserSignUpScreen
 import com.example.marketing.view.AuthHealthCheckScreen
 import com.example.marketing.view.AuthHomeScreen
 import com.example.marketing.view.InfluencerLoginScreen
+import com.example.marketing.view.InfluencerSignUpScreen
 import com.example.marketing.view.MainInItScreen
 import com.example.marketing.view.MainScreen
 import com.example.marketing.view.SplashV1Screen
@@ -71,7 +72,15 @@ fun AppNavGraph(
             }
 
             composable(ScreenRoute.AUTH_ADVERTISER_SIGNUP.route) {
-                AdvertiserSignUpScreen()
+                AdvertiserSignUpScreen(
+                    navController = navController
+                )
+            }
+
+            composable(ScreenRoute.AUTH_INFLUENCER_SIGNUP.route) {
+                InfluencerSignUpScreen(
+                    navController = navController
+                )
             }
         }
 

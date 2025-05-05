@@ -8,6 +8,7 @@ import com.example.marketing.dto.board.request.SaveAdvertisementImageMetadata
 import com.example.marketing.dto.board.request.SetAdvertisementThumbnail
 import com.example.marketing.dto.board.request.SetAdvertisementThumbnailRequest
 import com.example.marketing.dto.board.response.DeleteAdImageResponse
+import com.example.marketing.dto.board.response.GetAdThumbnailUrlResponse
 import com.example.marketing.dto.board.response.GetAllAdImageMetadataResponse
 import com.example.marketing.dto.board.response.SetAdvertisementThumbnailResponse
 import com.example.marketing.dto.board.response.SetImageAdvertisementResponse
@@ -33,7 +34,6 @@ class AdvertisementImageApi @Inject constructor(
     private val httpClient: HttpClient,
     private val jwtTokenDao: JwtTokenDao
 ) {
-
     suspend fun upload(
         requestModel: SaveAdvertisementImageMetadata,
         binaryImage: ByteArray,
@@ -97,12 +97,24 @@ class AdvertisementImageApi @Inject constructor(
         }.body()
     }
 
+    suspend fun fetchThumbnailUl(advertisementId: Long): GetAdThumbnailUrlResponse {
+        return httpClient.get("/open/advertisement/image/thumbnail/$advertisementId")
+            .body()
+    }
+
     suspend fun fetchAllMetaDataByAdvertisementId(advertisementId: Long):
             GetAllAdImageMetadataResponse {
         return httpClient.get("/open/advertisement/image/meta/$advertisementId").body()
     }
 
-    suspend fun fetchByIdentifiedUrl(imageUrl: String): ByteArray {
-        return httpClient.get("/open/$imageUrl").body()
+    suspend fun fetchImageByteByIdentifiedUrl(imageUrl: String): ByteArray {
+        // ⛏️ detach from url
+        val parts = imageUrl.trimStart('/').split("/")
+        val entryPath = parts.dropLast(1).joinToString("/") // "advertisement/image"
+        val uuid = parts.last()                            // UUID
+
+        val finalUrl = "/open/$entryPath/$uuid"            // => "/open/advertisement/image/UUID"
+
+        return httpClient.get(finalUrl).body<ByteArray>()
     }
 }

@@ -38,10 +38,9 @@ fun AdvertiserLoginScreen(
     val password = viewmodel.password.collectAsState()
     val apiCallStatus = viewmodel.apiCallStatus.collectAsState()
     val advertiserId = viewmodel.advertiserId.collectAsState()
-    val loginStatus = viewmodel.loginStatus.collectAsState()
 
     LaunchedEffect(apiCallStatus.value) {
-        if (apiCallStatus.value == ApiCallStatus.SUCCESS && loginStatus.value) {
+        if (apiCallStatus.value == ApiCallStatus.SUCCESS) {
             navController.navigate(
                 "${ScreenRoute.MAIN_INIT.route}/" +
                         "${UserType.ADVERTISER_COMMON}/" +
@@ -101,7 +100,7 @@ fun AdvertiserLoginScreen(
             }
 
             Text(
-                text ="회원이 아니신가요?",
+                text ="🧑‍💼 광고주로 시작하기",
                 modifier = Modifier.clickable {
                     navController.navigate(ScreenRoute.AUTH_ADVERTISER_SIGNUP.route)
                 }

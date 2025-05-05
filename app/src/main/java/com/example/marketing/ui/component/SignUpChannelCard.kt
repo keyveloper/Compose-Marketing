@@ -4,6 +4,8 @@ package com.example.marketing.ui.component
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.*
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color
@@ -14,7 +16,8 @@ import com.example.marketing.ui.item.ChannelFloatingObject
 @Composable
 fun SignUpChannelCard(
     item: ChannelFloatingObject,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDelete: (ChannelFloatingObject) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -61,8 +64,25 @@ fun SignUpChannelCard(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = item.channelName!!,
+                    text = item.channelUrl,
                     style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            // Divider between icon and text
+            HorizontalDivider(
+                color = Color.LightGray,
+                modifier = Modifier
+                    .width(1.dp)
+                    .fillMaxHeight()
+            )
+
+            IconButton(
+                onClick = { onDelete(item) }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "channel icon delete"
                 )
             }
         }

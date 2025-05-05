@@ -1,7 +1,5 @@
 package com.example.marketing.view
 
-import android.content.Context
-import android.location.Geocoder
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,8 +43,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.marketing.enums.AdvertiserSignUpStatus
+import androidx.navigation.NavController
+import com.example.marketing.enums.AdvertiserSignUpPart
 import com.example.marketing.enums.AdvertiserType
+import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.viewmodel.AdvertiserSignUpViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -60,26 +60,30 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun AdvertiserSignUpScreen(
     viewModel: AdvertiserSignUpViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    // state - user info, service info, service map(locations)
-    val liveStatus = viewModel.liveStatus.collectAsState()
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { liveStatus.value }
-            .collectLatest { status ->
-                Log.i("advertiser-signup", "status: ${status}")
-            }
+    // ------------✍️ input value -------------
+    val companyName = viewModel.companyName.collectAsState()
+    val homepageUrl = viewModel.homepageUrl.collectAsState()
+    val advertiserType = viewModel.advertiserType.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val contact by viewModel.contact.collectAsState()
 
-    }
+    // ------------🔃 status ------------
+    val part = viewModel.part.collectAsState()
+    val apiCallStatus by viewModel.SignUpApiCallStatus.collectAsState()
+
+    // ----------- 🎮 controller-------------
     // back handler
     BackHandler {
-        when (liveStatus.value) {
-            AdvertiserSignUpStatus.SERVICE_INFO -> {
-                viewModel.updateLiveStatus(AdvertiserSignUpStatus.CREDENTIAL)
+        when (part.value) {
+            AdvertiserSignUpPart.SERVICE_INFO -> {
+                viewModel.updatePart(AdvertiserSignUpPart.CREDENTIAL)
             }
 
-            AdvertiserSignUpStatus.MAP -> {
-                viewModel.updateLiveStatus(AdvertiserSignUpStatus.SERVICE_INFO)
+            AdvertiserSignUpPart.MAP -> {
+                viewModel.updatePart(AdvertiserSignUpPart.SERVICE_INFO)
             }
 
             else -> {
@@ -88,8 +92,23 @@ fun AdvertiserSignUpScreen(
         }
     }
 
+    LaunchedEffect(apiCallStatus) {
+        if (apiCallStatus == ApiCallStatus.SUCCESS) {
+            navController.navigate(ScreenRoute.AUTH_ADVERTISER_LOGIN.route) {
+                popUpTo(ScreenRoute.AUTH_ADVERTISER_SIGNUP.route) {
+                    inclusive = true
+                }
+            }
+        }
+    }
+
+
+    // ----------- 🚀 api value -----------
+
+
+
     AnimatedVisibility(
-        visible = liveStatus.value == AdvertiserSignUpStatus.CREDENTIAL,
+        visible = part.value == AdvertiserSignUpPart.CREDENTIAL,
         enter = EnterTransition.None,
         exit = ExitTransition.None
     ) {
@@ -162,8 +181,8 @@ fun AdvertiserSignUpScreen(
 
                         Button(
                             onClick = {
-                                viewModel.updateLiveStatus(
-                                    AdvertiserSignUpStatus.SERVICE_INFO
+                                viewModel.updatePart(
+                                    AdvertiserSignUpPart.SERVICE_INFO
                                 )
                             }, // api call !!
                             enabled = passwordValidation,
@@ -208,15 +227,10 @@ fun AdvertiserSignUpScreen(
 
     // service type, service nmme,
     AnimatedVisibility(
-        visible = liveStatus.value == AdvertiserSignUpStatus.SERVICE_INFO,
+        visible = part.value == AdvertiserSignUpPart.SERVICE_INFO,
         enter = EnterTransition.None,
         exit = ExitTransition.None
     ) {
-        val companyName = viewModel.companyName.collectAsState()
-        val homepageUrl = viewModel.homepageUrl.collectAsState()
-        val advertiserType = viewModel.advertiserType.collectAsState()
-        var nextStage by remember { mutableStateOf(false) }
-
         Box(
             modifier = Modifier.fillMaxSize()
                 .padding(horizontal = 24.dp)
@@ -253,7 +267,7 @@ fun AdvertiserSignUpScreen(
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                            verticalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text ="🏪",
@@ -317,13 +331,35 @@ fun AdvertiserSignUpScreen(
                     shape = RoundedCornerShape(8.dp)
                 )
 
+                OutlinedTextField(
+                    value = email ?: "",
+                    onValueChange = {
+                        viewModel.updateEmail(it)
+                    },
+                    label = { Text("이메일") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    shape = RoundedCornerShape(8.dp)
+                )
 
+                OutlinedTextField(
+                    value = contact ?: "",
+                    onValueChange = {
+                        viewModel.updateContact(it)
+                    },
+                    label = { Text("전화번호") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(64.dp),
+                    shape = RoundedCornerShape(8.dp)
+                )
 
                 Button(
                     onClick = {
                         viewModel.signUp()
-                    }, // api call !!
-                    enabled = nextStage,
+                    },
+                    enabled = viewModel.checkApiAllowed(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(64.dp),
@@ -335,17 +371,13 @@ fun AdvertiserSignUpScreen(
                 ) {
                     Text("회원가입")
                 }
-
-                if (companyName.value.isNotEmpty()) {
-                    nextStage = true
-                }
             }
         }
     }
 
     // map
     AnimatedVisibility(
-        visible = liveStatus.value == AdvertiserSignUpStatus.MAP,
+        visible = part.value == AdvertiserSignUpPart.MAP,
         enter = EnterTransition.None,
         exit = ExitTransition.None
     ) {

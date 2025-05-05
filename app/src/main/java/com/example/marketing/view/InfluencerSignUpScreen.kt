@@ -2,6 +2,7 @@ package com.example.marketing.view
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -55,6 +56,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -74,12 +76,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.marketing.enums.ApiCallStatus
 import com.example.marketing.enums.ChannelIcon
+import com.example.marketing.enums.ChannelType
+import com.example.marketing.enums.InfluencerSignUpPart
+import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.ui.component.SignUpChannelCard
 import com.example.marketing.ui.item.ChannelFloatingObject
 import com.example.marketing.viewmodel.InfluencerSignUpViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -88,68 +96,77 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfluencerSignUpScreen(
-    viewModel: InfluencerSignUpViewModel = hiltViewModel()
+    viewModel: InfluencerSignUpViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    // statement
-    val credentialPart = viewModel.credentialPartLive.collectAsState()
-    val detailPart = viewModel.detailPartStatus.collectAsState()
-    val channelPart = viewModel.channelPartStatus.collectAsState()
-
+    // ------------✍️ input value -------------
     val loginId = viewModel.loginId.collectAsState()
-    val loginIdFilled = viewModel.loginIdFilled.collectAsState()
     val password = viewModel.password.collectAsState()
+    val birthday = viewModel.formattedBirthday.collectAsState()
+    val channelCards = viewModel.channelCards.collectAsState()
+
+    // ------------🥃 local state --------------
     val passwordValidation = viewModel.passwordValidation.collectAsState()
     val passwordValidationStatus =
         viewModel.passwordValidationStatus.collectAsState()
 
-    // detail parts
-    val date = viewModel.formattedDate.collectAsState()
+    // ------------🔃 status ------------------
+    val part by viewModel.part.collectAsState()
+    val signUpApiCallStatus by viewModel.signUpApiCallStatus.collectAsState()
 
+    // ----------- 🚀 from server value -----------
+    val coroutineScope = rememberCoroutineScope()
+
+
+    // ------------ ⛏️ library ------------------
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = null,
         initialDisplayedMonthMillis = null,
         yearRange = 1900..2025,
     )
 
-    // channel
-    val channels = viewModel.channels.collectAsState()
-
-    LaunchedEffect(Unit) {
-        snapshotFlow { loginId.value }
-            .collectLatest { id ->
-                viewModel.updateLoginFilled(id.isNotBlank())
-            }
-    }
-
+    // ------------ 🎮 controller  ---------------
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let { millis ->
             val formatted = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 .format(Date(millis))
 
-            viewModel.setFormattedDate(formatted)
+            viewModel.updateFormattedDate(formatted)
+        }
+    }
+
+    LaunchedEffect(signUpApiCallStatus) {
+        if (signUpApiCallStatus == ApiCallStatus.SUCCESS) {
+            navController.navigate(ScreenRoute.AUTH_INFLUENCER_LOGIN.route) {
+                popUpTo(ScreenRoute.AUTH_INFLUENCER_SIGNUP.route) {
+                    inclusive = true
+                }
+            }
         }
     }
 
     BackHandler {
-        when {
-            channelPart.value -> {
-                viewModel.nextToDetailPart()
+        when(part) {
+            InfluencerSignUpPart.DETAIL -> {
+                // detail -> credential
+                viewModel.updatePart(InfluencerSignUpPart.CREDENTIAL)
             }
-            detailPart.value -> {
-                viewModel.nextToCredentialPart()
-            }
-            else -> {
+            InfluencerSignUpPart.CHANNEL -> {
+                // channel -> detail
+                viewModel.updatePart(InfluencerSignUpPart.DETAIL)
+            } else -> {
                 // Optional: handle exit or finish activity if on first step
+                // None
             }
         }
     }
 
-    // credential part
+    // -------------- 🖼️ UI --------------------
     AnimatedVisibility(
-        visible = credentialPart.value && !detailPart.value && !channelPart.value,
-        exit = ExitTransition.None
+        visible = part.equals(InfluencerSignUpPart.CREDENTIAL),
+        exit = ExitTransition.None,
+        enter = EnterTransition.None
     ) {
-
         Box(
             modifier = Modifier.fillMaxSize()
                 .background(Color.White)
@@ -163,7 +180,7 @@ fun InfluencerSignUpScreen(
                 OutlinedTextField(
                     value = loginId.value,
                     onValueChange = {
-                        viewModel.setLoginId(it)
+                        viewModel.updateLoginId(it)
                     },
                     label = { Text("아이디") },
                     modifier = Modifier
@@ -173,14 +190,14 @@ fun InfluencerSignUpScreen(
                 )
 
                 AnimatedVisibility(
-                    visible = loginIdFilled.value,
+                    visible = loginId.value.isNotEmpty(),
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         OutlinedTextField(
                             value = password.value,
-                            onValueChange = { viewModel.setPassword(it) },
+                            onValueChange = { viewModel.updatePassword(it) },
                             label = { Text("비밀번호") },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -191,7 +208,7 @@ fun InfluencerSignUpScreen(
 
                         OutlinedTextField(
                             value = passwordValidation.value,
-                            onValueChange = { viewModel.setPasswordValidation(it) },
+                            onValueChange = { viewModel.updatePasswordValidation(it) },
                             label = { Text("비밀번호 확인") },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -201,7 +218,7 @@ fun InfluencerSignUpScreen(
                         )
 
                         Button(
-                            onClick = { viewModel.nextToDetailPart() }, // api call !!
+                            onClick = { viewModel.updatePart(InfluencerSignUpPart.DETAIL) },
                             enabled = passwordValidationStatus.value,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -217,8 +234,8 @@ fun InfluencerSignUpScreen(
 
                         if (password.value.isNotEmpty() &&
                             passwordValidation.value.isNotEmpty()
-                        )
-                            if (password.value != passwordValidation.value) {
+                        ) {
+                            if (!viewModel.mathPasswords()) {
                                 Text(
                                     text = "비밀번호가 일치하지 않습니다.",
                                     color = Color.Red,
@@ -235,6 +252,7 @@ fun InfluencerSignUpScreen(
                                 )
                                 viewModel.updatePasswordValidationStatus(true)
                             }
+                        }
                     }
                 }
             }
@@ -243,8 +261,9 @@ fun InfluencerSignUpScreen(
     }
 
     AnimatedVisibility(
-        visible = detailPart.value,
-        exit = ExitTransition.None
+        visible = part.equals(InfluencerSignUpPart.DETAIL),
+        exit = ExitTransition.None,
+        enter = EnterTransition.None
     ) {
         val showDataPicker = remember { MutableStateFlow(false) }
         val isPickerVisible by showDataPicker.collectAsState()
@@ -283,7 +302,7 @@ fun InfluencerSignUpScreen(
                 ) {
                     // text : data picker
                     OutlinedTextField(
-                        value = date.value,
+                        value = birthday.value,
                         onValueChange = {
                         },
                         label = { Text("생년월일") },
@@ -338,10 +357,10 @@ fun InfluencerSignUpScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = date.value.isNotEmpty()
+                    visible = birthday.value.isNotEmpty()
                 ) {
                     Button(
-                        onClick = { viewModel.nextToChannelPart() }, // api call !!
+                        onClick = { viewModel.updatePart(InfluencerSignUpPart.CHANNEL) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(64.dp),
@@ -360,8 +379,9 @@ fun InfluencerSignUpScreen(
 
     // channel
     AnimatedVisibility(
-        visible = channelPart.value,
-        exit = ExitTransition.None
+        visible = part.equals(InfluencerSignUpPart.CHANNEL),
+        exit = ExitTransition.None,
+        enter = EnterTransition.None
     ) {
         val addMode = remember { mutableStateOf(false) }
 
@@ -378,7 +398,7 @@ fun InfluencerSignUpScreen(
                     start = 24.dp,
                     end = 24.dp,
                     bottom = 82.dp,
-                    top = 42.dp
+                    top = 65.dp
                 )
                 .clickable(
                     indication = null,
@@ -390,18 +410,19 @@ fun InfluencerSignUpScreen(
                 }
         ) {
             FloatingActionButton(
-                onClick = { /* handle top FAB action */ },
+                onClick = { coroutineScope.launch {
+                    viewModel.signUp()
+                } },
                 containerColor = Color.Transparent,       // transparent background
                 contentColor = Color.Gray,               // icon/text color
                 elevation = FloatingActionButtonDefaults.elevation(0.dp),
                 modifier = Modifier
                     .align(Alignment.TopEnd)              // 👈 place it at top end (or TopCenter if you want)
-                    .padding(top = 8.dp, end = 8.dp)
                     .size(48.dp)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowForward,
-                    contentDescription = "Top FAB",
+                    contentDescription = "signUp icon button",
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -434,13 +455,14 @@ fun InfluencerSignUpScreen(
             ) {
                 Text(
                     text = "어떤 채널을 운영 중이신가요?",
+                    style = MaterialTheme.typography.headlineSmall
                 )
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(channels.value) { channel ->
+                    items(channelCards.value) { channel ->
                         val animatedOffset by animateOffsetAsState(
                             targetValue = channel.currentPosition,
                             animationSpec = if (channel.currentPosition != channel.defaultPosition)
@@ -471,7 +493,10 @@ fun InfluencerSignUpScreen(
                                     )
                                 }
                         ) {
-                            SignUpChannelCard(channel)
+                            SignUpChannelCard(
+                                item = channel,
+                                onDelete = { viewModel.deleteChannel(channel) }
+                            )
                         }
 
                     }
@@ -545,7 +570,8 @@ fun InfluencerSignUpScreen(
                         Button(
                             onClick = {
                                 val ySpacing = 40f
-                                val lastY = channels.value.lastOrNull()?.defaultPosition?.y ?: 0f
+                                val lastY =
+                                    channelCards.value.lastOrNull()?.defaultPosition?.y ?: 0f
                                 val newPosition = Offset(0f, lastY + ySpacing)
 
                                 viewModel.addChannel(
@@ -555,7 +581,9 @@ fun InfluencerSignUpScreen(
                                         channelUrl = channelUrl,
                                         icon = selectedChannel,
                                         defaultPosition = newPosition,
-                                        currentPosition = newPosition
+                                        currentPosition = newPosition,
+                                        channelType = ChannelType.fromCode(selectedChannel.code)!!
+                                        // 📌 not null always
                                     )
                                 )
                                 addMode.value = false

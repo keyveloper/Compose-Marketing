@@ -30,9 +30,6 @@ class AdvertiserLoginViewModel @Inject constructor(
     private val _advertiserId:MutableStateFlow<Long?> = MutableStateFlow (null)
     val advertiserId = _advertiserId.asStateFlow()
 
-    private val _loginStatus = MutableStateFlow(false)
-    val loginStatus = _loginStatus.asStateFlow()
-
     private val _apiCallStatus = MutableStateFlow (ApiCallStatus.IDLE)
     val apiCallStatus = _apiCallStatus.asStateFlow()
 
@@ -52,35 +49,22 @@ class AdvertiserLoginViewModel @Inject constructor(
         _apiCallStatus.value = status
     }
 
-    private fun updateLoginStatus(status: Boolean) {
-        _loginStatus.value = true
-    }
-
     fun login() {
         viewModelScope.launch(Dispatchers.IO) {
             updateApiCallStatus(ApiCallStatus.LOADING)
-            try {
-                val result = advertiserRepository.login(
-                    LoginAdvertiser.of(_loginId.value, _password.value)
-                )
 
+            val result = advertiserRepository.login(
+                LoginAdvertiser.of(_loginId.value, _password.value)
+            )
+
+            if (result != null) {
                 withContext(Dispatchers.Main) {
                     updateAdvertiserId(result.id)
                     updateApiCallStatus(ApiCallStatus.SUCCESS)
-                    updateLoginStatus(true)
                     authRepository.saveToken(result.jwt)
                 }
-
-            } catch (e: BusinessException) {
-                withContext(Dispatchers.Main) {
-                    updateApiCallStatus(ApiCallStatus.SUCCESS)
-                    updateLoginStatus(false)
-                    // optionally save error message
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    updateApiCallStatus(ApiCallStatus.FAILED)
-                }
+            } else {
+                updateApiCallStatus(ApiCallStatus.FAILED)
             }
         } // how to catch the error?
     }

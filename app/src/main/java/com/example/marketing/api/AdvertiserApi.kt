@@ -20,7 +20,7 @@ class AdvertiserApi @Inject constructor(
 ) {
     suspend fun signUp(requestModel: SignUpAdvertiser): MakeNewAdvertiserResponse {
         val request = MakeNewAdvertiserRequest.of(requestModel)
-        return client.post("/test/advertiser") {
+        return client.post("/entry/new-advertiser") {
             setBody(request)
         }.body()
     }

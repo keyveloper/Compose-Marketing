@@ -22,6 +22,10 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
+    // ------------✍️ input value -------------
+    // ----------- 🚀 from server value -----------
+    // ----------- 🎮 update function-------------
+    // ----------- 🛜 API -----------------------
     val screenState = homeViewModel.screenState.collectAsState()
     // status Screen Surface
     Box(

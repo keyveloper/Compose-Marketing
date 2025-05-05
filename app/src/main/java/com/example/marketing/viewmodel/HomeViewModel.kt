@@ -11,6 +11,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(): ViewModel() {
+    // ------------✍️ input value -------------
+    // ----------- 🚀 from server value -----------
+    // ----------- 🎮 update function-------------
+    // ----------- 🛜 API -----------------------
+    // -------------🔍 inspection -----------
+
+
+    // ------------🔃 status ------------
     private val _screenState = MutableStateFlow(HomeScreenStatus.Event)
     val screenState: StateFlow<HomeScreenStatus> = _screenState.asStateFlow()
     
