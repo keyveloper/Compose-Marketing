@@ -5,7 +5,6 @@ import com.example.marketing.dto.board.request.GetDeliveryAdvertisementsTimeline
 import com.example.marketing.dto.board.request.MakeNewAdvertisementDeliveryRequest
 import com.example.marketing.dto.board.request.SaveAdvertisementDelivery
 import com.example.marketing.dto.board.request.SaveAdvertisementGeneral
-import com.example.marketing.dto.board.response.GetAdvertisementDeliveryResponse
 import com.example.marketing.dto.board.response.GetDeliveryAdvertisementsTimelineByCategoryResponse
 import com.example.marketing.dto.board.response.MakeNewAdvertisementDeliveryResponse
 import io.ktor.client.HttpClient
@@ -26,14 +25,6 @@ class AdvertisementDeliveryApi @Inject constructor(
                 MakeNewAdvertisementDeliveryRequest.of(requestModel)
             )
         }.body()
-    }
-
-    suspend fun fetchById(
-        targetId: Long
-    ): GetAdvertisementDeliveryResponse {
-        return httpClient.get(
-            "/test/advertisement/delivery/$targetId"
-        ).body()
     }
 
     suspend fun fetchAllTimelineByCategoryAndDirection(

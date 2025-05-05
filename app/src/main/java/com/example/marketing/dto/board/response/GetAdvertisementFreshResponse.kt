@@ -1,9 +1,9 @@
 package com.example.marketing.dto.board.response
 
-import com.example.marketing.domain.Advertisement
+import com.example.marketing.domain.AdvertisementPackage
 
 data class GetAdvertisementFreshResponse(
     val frontErrorCode: Int,
     val errorMessage: String,
-    val advertisements: List<Advertisement>
+    val packages: List<AdvertisementPackage>
 )

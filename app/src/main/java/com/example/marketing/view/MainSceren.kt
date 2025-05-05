@@ -22,7 +22,8 @@ import com.example.marketing.viewmodel.MainViewModel
 fun MainScreen(
     viewModel: MainViewModel = hiltViewModel(),
     userInitType: UserType,
-    initUserId: Long
+    initUserId: Long,
+    navController: NavController
 ) {
     val screenStatus = viewModel.screenStatus.collectAsState()
     val userType = viewModel.userType.collectAsState()
@@ -68,6 +69,7 @@ fun MainScreen(
                         .fillMaxSize()
                         .background(Color.White)
                     ,
+                    navController = navController
                 )
             }
 

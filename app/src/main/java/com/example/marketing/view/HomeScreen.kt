@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.marketing.enums.HomeScreenStatus
 import com.example.marketing.ui.component.bar.HomeTopBar
 import com.example.marketing.viewmodel.HomeViewModel
@@ -20,7 +21,8 @@ import com.example.marketing.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     // ------------✍️ input value -------------
     // ----------- 🚀 from server value -----------
@@ -51,11 +53,13 @@ fun HomeScreen(
         ) {
             when (screenState.value) {
                 HomeScreenStatus.Event -> {
-                    EventScreen()
+                    EventScreen(
+                        navController = navController
+                    )
                 }
                 
                 HomeScreenStatus.Delivery -> {
-                    DeliveryScreen()
+                    // DeliveryScreen()
                 }
 
                 HomeScreenStatus.Type -> {
@@ -69,9 +73,3 @@ fun HomeScreen(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomeScreen() {
-    HomeScreen()
-   }

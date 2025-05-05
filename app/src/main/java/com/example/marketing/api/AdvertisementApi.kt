@@ -6,7 +6,7 @@ import com.example.marketing.dto.board.request.MakeNewAdvertisementGeneralReques
 import com.example.marketing.dto.board.request.SaveAdvertisementDelivery
 import com.example.marketing.dto.board.request.SaveAdvertisementGeneral
 import com.example.marketing.dto.board.response.GetAdvertisementFreshResponse
-import com.example.marketing.dto.board.response.GetAdvertisementResponse
+import com.example.marketing.dto.board.response.GetAdvertisementGeneralResponse
 import com.example.marketing.dto.board.response.MakeNewAdvertisementDeliveryResponse
 import com.example.marketing.dto.board.response.MakeNewAdvertisementGeneralResponse
 import io.ktor.client.HttpClient
@@ -22,16 +22,6 @@ class AdvertisementApi @Inject constructor(
     private val client: HttpClient,
     private val jwtTokenDao: JwtTokenDao
 ) {
-    // basic api
-    suspend fun fetchById(id : Long): GetAdvertisementResponse {
-        return client.get("/test/advertisement/$id").body()
-    }
-
-    // timeline api
-    suspend fun fetchFresh(): GetAdvertisementFreshResponse{
-        return client.get("/test/advertisement/fresh").body()
-    }
-
     suspend fun uploadGeneral(requestModel: SaveAdvertisementGeneral):
             MakeNewAdvertisementGeneralResponse {
         val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
@@ -54,5 +44,9 @@ class AdvertisementApi @Inject constructor(
 
             bearerAuth(token)
         }.body()
+    }
+
+    suspend fun fetchById(targetId: Long): GetAdvertisementGeneralResponse {
+        return client.get("/open/advertisement/general/$targetId").body()
     }
 }

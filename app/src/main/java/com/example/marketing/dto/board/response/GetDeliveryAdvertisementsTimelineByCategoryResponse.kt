@@ -1,9 +1,9 @@
 package com.example.marketing.dto.board.response
 
-import com.example.marketing.domain.AdvertisementDelivery
+import com.example.marketing.domain.AdvertisementPackage
 
 data class GetDeliveryAdvertisementsTimelineByCategoryResponse(
     val frontErrorCode: Int,
     val errorMessage: String,
-    val advertisements: List<AdvertisementDelivery>
+    val packages: List<AdvertisementPackage>
 )

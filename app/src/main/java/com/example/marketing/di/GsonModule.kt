@@ -1,6 +1,5 @@
 package com.example.marketing.di
 
-import com.example.marketing.domain.Advertisement
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module

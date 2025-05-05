@@ -1,21 +1,28 @@
 package com.example.marketing.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
-import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.ui.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.marketing.enums.ChannelType
-import com.example.marketing.enums.ReviewType
-import com.example.marketing.ui.component.AdvertisementThumbnailItem
+import androidx.navigation.NavController
+import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.enums.EventStatus
+import com.example.marketing.enums.ScreenRoute
+import com.example.marketing.ui.color.MintCream
 import com.example.marketing.ui.component.VerticalAdvertisementThumbnail
 import com.example.marketing.ui.widget.CategoryBox
 import com.example.marketing.viewmodel.EventViewModel
@@ -23,27 +30,51 @@ import com.example.marketing.viewmodel.EventViewModel
 @Composable
 fun EventScreen(
     modifier: Modifier = Modifier,
-    eventViewModel: EventViewModel = hiltViewModel()
+    viewModel: EventViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    // 예시 데이터 (실제 데이터는 API 등을 통해 받아오기)
-    val advertisementItems = (1..30).map { i ->
-        AdvertisementThumbnailItem(
-            advertisementId = i.toLong(),
-            thumbnailImageUrl = "",
-            title = "Advertisement Title $i",
-            itemName = "Item Name $i",
-            channelType = ChannelType.BLOGGER,
-            reviewType = ReviewType.VISITED
-        )
+    // ------------🔃 status ------------
+    val eventStatus by viewModel.eventStatus.collectAsState()
+    val totalApiCallStatus by viewModel.totalApiCategory.collectAsState()
+
+    // ----------- 🚀 from server value -----------
+    val thumbnailItem by viewModel.thumbnailItem.collectAsState()
+    val packages by viewModel.packages.collectAsState()
+
+    // ----------- 🎮 controller -------------
+    LaunchedEffect(eventStatus) {
+        when (eventStatus) {
+            EventStatus.IDLE -> {
+                viewModel.testFetch()
+            }
+
+            EventStatus.FRESH-> {
+                viewModel.clearItems()
+                viewModel.fetchFreshWithThumbnail()
+            }
+
+            EventStatus.DEADLINE -> {
+                viewModel.clearItems()
+                viewModel.fetchDeadlineWithThumbnail()
+            }
+
+            else -> {
+
+            }
+        }
+        // eventViewModel.fetchFresh()
     }
+
+    // ------------ 🖼️ UI ------------------
     // LazyColumn의 스크롤 상태를 이용하여 오프셋 값을 가져옴
     val listState = rememberLazyListState()
     val density = LocalDensity.current
 
-    LaunchedEffect(Unit) {
-        // eventViewModel.fetchFresh()
-    }
-
+    AnimatedVisibility(
+        visible = totalApiCallStatus == ApiCallStatus.SUCCESS,
+        enter = EnterTransition.None,
+        exit = ExitTransition.None
+    ) { }
     LazyColumn(
         state = listState,
         modifier = modifier
@@ -66,7 +97,7 @@ fun EventScreen(
                         eventCode = 1,
                         icon = {},
                         onCategorySelected = { status ->
-                            eventViewModel.changeEventStatus(status)
+                            viewModel.updateEventStatus(status)
                         }
                     )
                     CategoryBox(
@@ -74,7 +105,7 @@ fun EventScreen(
                         eventCode = 2,
                         icon = {},
                         onCategorySelected = { status ->
-                            eventViewModel.changeEventStatus(status)
+                            viewModel.updateEventStatus(status)
                         }
                     )
                     CategoryBox(
@@ -82,7 +113,7 @@ fun EventScreen(
                         eventCode = 0,
                         icon = {},
                         onCategorySelected = { status ->
-                            eventViewModel.changeEventStatus(status)
+                            viewModel.updateEventStatus(status)
                         }
                     )
                 }
@@ -108,7 +139,7 @@ fun EventScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        items(advertisementItems.chunked(2)) { rowItems ->
+        items(thumbnailItem.chunked(2)) { rowItems ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,10 +148,20 @@ fun EventScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                rowItems.forEach { item ->
+                rowItems.forEach { thumb ->
                     VerticalAdvertisementThumbnail(
-                        item = item,
-                        onClick = {}
+                        item = thumb,
+                        onClick = { selectedThumb ->
+                            val adPackage = packages.firstOrNull {
+                                it.advertisementGeneralFields.id ==
+                                        selectedThumb.advertisementId
+                            } ?: return@VerticalAdvertisementThumbnail
+
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("adPackage", adPackage)
+                            navController.navigate(ScreenRoute.MAIN_HOME_AD_DETAIL.route)
+                        }
                     )
                 }
 
@@ -129,6 +170,22 @@ fun EventScreen(
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = totalApiCallStatus != ApiCallStatus.SUCCESS,
+        enter = EnterTransition.None,
+        exit = ExitTransition.None
+    ) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                strokeWidth = 4.dp,
+                color = MintCream
+            )
         }
     }
 }

@@ -11,7 +11,9 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.*
+import coil3.compose.AsyncImage
 import com.example.marketing.R
+import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.enums.ChannelIcon
 import com.example.marketing.enums.ChannelType
 import com.example.marketing.enums.ReviewIcon
@@ -21,12 +23,12 @@ import com.example.marketing.enums.ReviewType
 fun VerticalAdvertisementThumbnail(
     item: AdvertisementThumbnailItem,
     modifier: Modifier = Modifier,
-    onClick: (Long) -> Unit
+    onClick: (AdvertisementThumbnailItem) -> Unit
 ) {
     val reviewIconVector = ReviewIcon.fromCode(item.reviewType.code)!!.iconVector
     Column(
         modifier = modifier
-            .clickable { onClick(item.advertisementId) }
+            .clickable { onClick(item) }
     ) {
 
         // Image tmp -> should change to coil
@@ -36,11 +38,12 @@ fun VerticalAdvertisementThumbnail(
             shape = RoundedCornerShape(0.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            Image(
-                imageVector = reviewIconVector,
-                contentDescription ="${item.itemName}'s thumbnail image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+            AsyncImage(
+                model = item.imageBytes,
+                contentDescription = "Advertisement Image added",
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
         }
 
@@ -102,19 +105,3 @@ fun VerticalAdvertisementThumbnail(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAdvertisementThumbnail() {
-    VerticalAdvertisementThumbnail(
-        item =  AdvertisementThumbnailItem(
-            advertisementId = 1L,
-            thumbnailImageUrl = "",
-            title = "Special Discount",
-            itemName = "Product X",
-            channelType = ChannelType.YOUTUBER,
-            reviewType = ReviewType.VISITED
-        ),
-        onClick = {}
-    )
-}

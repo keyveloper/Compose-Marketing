@@ -3,6 +3,7 @@ package com.example.marketing.enums
 import com.example.marketing.enums.ChannelIcon.entries
 
 enum class EventStatus(val code: Int) {
+    IDLE(-1),
     FRESH(0),
     HOT(1),
     DEADLINE(2);

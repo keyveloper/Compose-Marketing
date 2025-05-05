@@ -44,7 +44,7 @@ object KtorModule {
 
                 url {
                     protocol = URLProtocol.HTTP
-                    host = "192.168.51.89"
+                    host = "192.168.223.89"
                     port = 8080
                 }
                 header("User-Agent", "Marketing app")

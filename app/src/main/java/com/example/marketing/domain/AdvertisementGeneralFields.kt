@@ -3,7 +3,7 @@ package com.example.marketing.domain
 import com.example.marketing.enums.ChannelType
 import com.example.marketing.enums.ReviewType
 
-data class AdvertisementGeneral(
+data class AdvertisementGeneralFields(
     val id: Long,
     val title: String,
     val reviewType: ReviewType,
@@ -20,4 +20,6 @@ data class AdvertisementGeneral(
     val itemInfo: String?,
     val createdAt: Long,
     val updatedAt: Long,
+    val imageUris: List<String?>,
+    val thumbnailUri: String?,
 )
