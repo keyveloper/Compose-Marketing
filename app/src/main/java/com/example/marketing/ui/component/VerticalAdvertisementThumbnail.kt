@@ -1,5 +1,6 @@
 package com.example.marketing.ui.component
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.*
@@ -28,7 +29,10 @@ fun VerticalAdvertisementThumbnail(
     val reviewIconVector = ReviewIcon.fromCode(item.reviewType.code)!!.iconVector
     Column(
         modifier = modifier
-            .clickable { onClick(item) }
+            .clickable {
+                Log.i("VerticalAdvertisementThumbnail", "to Detail")
+                onClick(item)
+            }
     ) {
 
         // Image tmp -> should change to coil

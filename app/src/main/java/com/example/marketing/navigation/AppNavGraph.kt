@@ -8,8 +8,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.enums.UserType
+import com.example.marketing.view.AdvertisementDetailScreen
 import com.example.marketing.view.AdvertiserLoginScreen
 import com.example.marketing.view.AdvertiserSignUpScreen
 import com.example.marketing.view.AuthHealthCheckScreen
@@ -22,7 +24,7 @@ import com.example.marketing.view.SplashV1Screen
 
 @Composable
 fun AppNavGraph(
-    navController: NavHostController= rememberNavController()
+    navController: NavHostController= rememberNavController(),
 ) {
 
     NavHost(
@@ -109,7 +111,21 @@ fun AppNavGraph(
                     ?: -1L
                 MainScreen(
                     userInitType = userType,
-                    initUserId = userId)
+                    initUserId = userId,
+                    navController = navController
+                )
+            }
+
+            composable(
+                route = ScreenRoute.MAIN_HOME_AD_DETAIL.route + "/{advertisementId}",
+                arguments = listOf(navArgument("advertisementId") {
+                    type = NavType.LongType
+                })
+            ) { backStackEntry ->
+                val advertisementId = backStackEntry.arguments?.getLong("advertisementId") ?: 0
+                AdvertisementDetailScreen(
+                    advertisementId = advertisementId
+                )
             }
         }
     }

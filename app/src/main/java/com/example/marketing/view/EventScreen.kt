@@ -152,15 +152,10 @@ fun EventScreen(
                     VerticalAdvertisementThumbnail(
                         item = thumb,
                         onClick = { selectedThumb ->
-                            val adPackage = packages.firstOrNull {
-                                it.advertisementGeneralFields.id ==
-                                        selectedThumb.advertisementId
-                            } ?: return@VerticalAdvertisementThumbnail
-
-                            navController.currentBackStackEntry
-                                ?.savedStateHandle
-                                ?.set("adPackage", adPackage)
-                            navController.navigate(ScreenRoute.MAIN_HOME_AD_DETAIL.route)
+                            navController.navigate(
+                                ScreenRoute.MAIN_HOME_AD_DETAIL.route +
+                                        "/${selectedThumb.advertisementId}"
+                            )
                         }
                     )
                 }

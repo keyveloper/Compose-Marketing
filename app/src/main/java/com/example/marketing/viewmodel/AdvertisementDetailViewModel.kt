@@ -1,12 +1,10 @@
 package com.example.marketing.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.marketing.domain.AdvertisementPackage
-import com.example.marketing.enums.ChannelType
-import com.example.marketing.enums.ReviewType
 import com.example.marketing.repository.AdvertisementImageRepository
 import com.example.marketing.repository.AdvertisementRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,15 +22,20 @@ import javax.inject.Inject
 class AdvertisementDetailViewModel @Inject constructor(
     private val advertisementImageRepository: AdvertisementImageRepository,
     private val advertisementRepository: AdvertisementRepository,
-    savedStateHandle: SavedStateHandle
 ): ViewModel() {
     // ----------- ⛏️ init value (from route)  ----------
-    private val advertisementId: Long = checkNotNull(savedStateHandle["advertisementId"])
+    private val _advertisementId = MutableStateFlow<Long?> (null)
+    val advertisementId = _advertisementId.asStateFlow()
     
     private val _advertisementPackage = MutableStateFlow<AdvertisementPackage?>(null)
     val advertisementPackage = _advertisementPackage.asStateFlow()
 
     // ----------- 🎮 update  ----------
+    fun updateAdvertisementId(id: Long) = run {
+        _advertisementId.value = id
+        Log.i("adDetailVm", "updated adId = ${_advertisementId.value}")
+    }
+
     fun updateAdvertisementPackage(pkg: AdvertisementPackage) = run {
         _advertisementPackage.value = pkg
     }
@@ -46,32 +49,30 @@ class AdvertisementDetailViewModel @Inject constructor(
     val imageBytesList: StateFlow<List<ByteArray>> = _imageBytesList
 
     // ----------- 🛜 API function -----------
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val pkg = advertisementRepository.fetchById(advertisementId)
+    fun fetchDetailAndImages() = viewModelScope.launch {
+        // Switch to IO for network work
+        withContext(Dispatchers.IO) {
+            // 1) Fetch the detail
+            val pkg: AdvertisementPackage = advertisementRepository.fetchById(_advertisementId.value!!)
+                ?: // API returned null → update an error state or just return
+                // e.g. _errorState.value = "Failed to load advertisement"
+                return@withContext
 
-                val uris = pkg!!.advertisementGeneralFields.imageUris
-
-                val deferreds = uris.map { uri ->
-                    async(Dispatchers.IO) { advertisementImageRepository.fetchImageBytes(uri) }
+            // 2) Fetch all image bytes in parallel
+            val uris = pkg.advertisementGeneralFields.imageUris
+            val bytesList: List<ByteArray> = uris.map { uri ->
+                async(Dispatchers.IO) {
+                    advertisementImageRepository.fetchImageBytes(uri)
                 }
+            }
+                .awaitAll()
+                .filterNotNull()  // drop any null returns
 
-                // awaitAll gives List<ByteArray?> if fetchImageBytes returns ByteArray?
-                val results: List<ByteArray?> = deferreds.awaitAll()
-                // Filter out any nulls
-                val bytesList: List<ByteArray> = results.filterNotNull()
-
-                withContext(Dispatchers.Main) {
-                    _imageBytesList.value = bytesList
-                    updateAdvertisementPackage(pkg)
-                }
-            } catch (t: Throwable) {
-
+            // 3) Back on Main, update your StateFlows
+            withContext(Dispatchers.Main) {
+                _advertisementPackage.value = pkg
+                _imageBytesList.value = bytesList
             }
         }
-    }
-    fun fetchImage(uri: String) = viewModelScope.launch(Dispatchers.IO) {
-        
     }
 }
