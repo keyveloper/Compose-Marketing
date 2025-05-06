@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,10 +44,24 @@ import com.example.marketing.viewmodel.InfluencerProfileViewModel
 
 @Composable
 fun InfluencerProfileScreen(
-    viewModel: InfluencerProfileViewModel = hiltViewModel()
+    viewModel: InfluencerProfileViewModel = hiltViewModel(),
+    influencerId: Long
 ) {
-    val influencer = viewModel.influencer.collectAsState()
 
+
+    // ------------✍️ input value -------------
+    // ------------🔃 status ------------
+    // ----------- 🚀 api value -----------
+    val profileInfo by viewModel.profileInfo.collectAsState()
+
+    // ----------- 🔭 Launched Effect -------------
+    LaunchedEffect(influencerId) {
+        viewModel.updateInfluencerId(influencerId)
+        viewModel.fetchProfileInfo()
+    }
+
+
+    // ----------- 🖼️ uI ---------------
     val minHeight: Dp = 120.dp
     val maxHeight: Dp = 250.dp
     val density = LocalDensity.current
@@ -119,8 +134,8 @@ fun InfluencerProfileScreen(
             item {
                 Spacer(Modifier.height(32.dp))
                 // UserID
-                influencer.value?.let {
-                    Text(it.loginId)
+                profileInfo?.let {
+                    Text(it.influencerLoginId)
                 } ?: Text(
                     "Login ID"
                 )
@@ -136,8 +151,8 @@ fun InfluencerProfileScreen(
                 )
 
                 // about
-                influencer.value?.let {
-                    Text(it.introduction)
+                profileInfo?.let {
+                    Text(it.introduction?: "Introduction")
                 } ?: Text("Introduction")
             }
 

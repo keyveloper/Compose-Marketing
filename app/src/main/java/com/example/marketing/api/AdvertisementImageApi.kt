@@ -3,13 +3,13 @@ package com.example.marketing.api
 import android.util.Log
 import com.example.marketing.dao.JwtTokenDao
 import com.example.marketing.dto.board.request.MakeNewAdvertisementImageRequest
-import com.example.marketing.dto.board.response.MakeNewAdvertisementImageResponse
 import com.example.marketing.dto.board.request.SaveAdvertisementImageMetadata
 import com.example.marketing.dto.board.request.SetAdvertisementThumbnail
 import com.example.marketing.dto.board.request.SetAdvertisementThumbnailRequest
 import com.example.marketing.dto.board.response.DeleteAdImageResponse
 import com.example.marketing.dto.board.response.GetAdThumbnailUrlResponse
 import com.example.marketing.dto.board.response.GetAllAdImageMetadataResponse
+import com.example.marketing.dto.board.response.MakeNewAdvertisementImageResponse
 import com.example.marketing.dto.board.response.SetAdvertisementThumbnailResponse
 import com.example.marketing.dto.board.response.SetImageAdvertisementResponse
 import io.ktor.client.HttpClient
@@ -23,11 +23,9 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import io.ktor.http.headers
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.serialization.encodeToString
-import javax.inject.Inject
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 
 class AdvertisementImageApi @Inject constructor(

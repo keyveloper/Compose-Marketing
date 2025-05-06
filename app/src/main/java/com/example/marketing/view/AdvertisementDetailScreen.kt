@@ -53,7 +53,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
-import com.example.marketing.domain.ReviewOffer
 import com.example.marketing.enums.ChannelIcon
 import com.example.marketing.enums.ReviewIcon
 import com.example.marketing.ui.color.MintCream
@@ -68,34 +67,7 @@ fun AdvertisementDetailScreen(
     // ----------- 🚀 API data  ----------
     val bytes by viewModel.imageBytesList.collectAsState()
     val pkg by viewModel.advertisementPackage.collectAsState()
-
-    val offers = listOf(
-        ReviewOffer(
-            id = 1L,
-            title = "Spring Collection Review",
-            description = "Review our new spring collection and earn exclusive rewards."
-        ),
-        ReviewOffer(
-            id = 2L,
-            title = "Fitness Gear Test",
-            description = "Try out our latest fitness gear and share your honest feedback."
-        ),
-        ReviewOffer(
-            id = 3L,
-            title = "Tech Gadget Preview",
-            description = "Get early access to our upcoming gadget and post your review."
-        ),
-        ReviewOffer(
-            id = 4L,
-            title = "Holiday Special Offers",
-            description = "Test and review our holiday special promotions."
-        ),
-        ReviewOffer(
-            id = 5L,
-            title = "Eco-Friendly Product Line",
-            description = "Try our eco-friendly products and let us know what you think."
-        )
-    )
+    val influencerInfos by viewModel.influencerInfo.collectAsState()
 
     // ----------- 😏 utils  ----------
     val stringBuilder = StringBuilder()
@@ -361,7 +333,9 @@ fun AdvertisementDetailScreen(
 
             // Main content
             FloatingActionButton(
-                onClick = { showSheet = true },
+                onClick = {
+                    viewModel.fetchOffers()
+                    showSheet = true },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
@@ -392,9 +366,9 @@ fun AdvertisementDetailScreen(
                         Spacer(Modifier.height(8.dp))
 
                         LazyColumn {
-                            items(offers.size) { idx ->
-                                Text(offers[idx].title)
-                                Text(offers[idx].description)
+                            items(influencerInfos.size) { idx ->
+                                Text(influencerInfos[idx].influencerLoginId)
+                                Text(influencerInfos[idx].offer)
                             }
                         }
                     }

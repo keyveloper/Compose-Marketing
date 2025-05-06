@@ -18,7 +18,6 @@ import com.example.marketing.exception.BusinessException
 import com.example.marketing.repository.AdvertisementDraftRepository
 import com.example.marketing.repository.AdvertisementImageRepository
 import com.example.marketing.repository.AdvertisementRepository
-import com.example.marketing.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

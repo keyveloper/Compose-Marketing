@@ -74,7 +74,6 @@ class AdvertisementImageRepository @Inject constructor(
 
 
     suspend fun fetchImageBytes(url: String?): ByteArray? {
-
         return if (url == null) {
             Log.w("adImgRepo", "fetch image bytes - url is null...")
             null
@@ -82,6 +81,5 @@ class AdvertisementImageRepository @Inject constructor(
             val response = advertisementImageApi.fetchImageByteByIdentifiedUrl(url)
             response
         }
-
     }
 }
