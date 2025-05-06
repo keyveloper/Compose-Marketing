@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.example.marketing.enums.ApiCallStatus
 import com.example.marketing.enums.EventStatus
 import com.example.marketing.enums.ScreenRoute
+import com.example.marketing.enums.UserType
 import com.example.marketing.ui.color.MintCream
 import com.example.marketing.ui.component.VerticalAdvertisementThumbnail
 import com.example.marketing.ui.widget.CategoryBox
@@ -31,7 +32,9 @@ import com.example.marketing.viewmodel.EventViewModel
 fun EventScreen(
     modifier: Modifier = Modifier,
     viewModel: EventViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    userId: Long,
+    userType: UserType
 ) {
     // ------------🔃 status ------------
     val eventStatus by viewModel.eventStatus.collectAsState()
@@ -42,6 +45,11 @@ fun EventScreen(
     val packages by viewModel.packages.collectAsState()
 
     // ----------- 🎮 controller -------------
+    LaunchedEffect(userId) {
+        viewModel.updateUserId(userId)
+        viewModel.updateUserType(userType)
+    }
+
     LaunchedEffect(eventStatus) {
         when (eventStatus) {
             EventStatus.IDLE -> {
@@ -149,15 +157,36 @@ fun EventScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 rowItems.forEach { thumb ->
-                    VerticalAdvertisementThumbnail(
-                        item = thumb,
-                        onClick = { selectedThumb ->
-                            navController.navigate(
-                                ScreenRoute.MAIN_HOME_AD_DETAIL.route +
-                                        "/${selectedThumb.advertisementId}"
-                            )
-                        }
-                    )
+
+                    if (userType == UserType.INFLUENCER) {
+                        VerticalAdvertisementThumbnail(
+                            item = thumb,
+                            onClick = { selectedThumb ->
+                                navController.navigate(
+                                    ScreenRoute.MAIN_HOME_AD_DETAIL.route +
+                                            "/${selectedThumb.advertisementId}"
+                                )
+                            },
+                            onToggleFavorite = {
+                                viewModel.favorite(advertisementId = thumb.advertisementId)
+                            },
+
+                        )
+                    } else {
+                        VerticalAdvertisementThumbnail(
+                            item = thumb,
+                            onClick = { selectedThumb ->
+                                navController.navigate(
+                                    ScreenRoute.MAIN_HOME_AD_DETAIL.route +
+                                            "/${selectedThumb.advertisementId}"
+                                )
+                            },
+                            onToggleFavorite = {
+
+                            }
+                        )
+                    }
+
                 }
 
                 // Fill empty space if only 1 item in last row

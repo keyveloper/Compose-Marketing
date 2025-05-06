@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.enums.ApiCallStatus
 import com.example.marketing.enums.EventStatus
+import com.example.marketing.enums.UserType
 import com.example.marketing.repository.AdvertisementEventRepository
 import com.example.marketing.repository.AdvertisementImageRepository
+import com.example.marketing.repository.FavoriteRepository
+import com.example.marketing.repository.ReviewOfferRepository
 import com.example.marketing.ui.component.AdvertisementThumbnailItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,8 +29,16 @@ import javax.inject.Inject
 @HiltViewModel
 class EventViewModel @Inject constructor(
     private val advertisementEventRepository: AdvertisementEventRepository,
-    private val advertisementImageRepository: AdvertisementImageRepository
+    private val advertisementImageRepository: AdvertisementImageRepository,
+    private val favoriteRepository: FavoriteRepository
 ): ViewModel() {
+    // ------------⛏️ init value -------------
+    private val _userId = MutableStateFlow<Long?> (null)
+    val userId = _userId.asStateFlow()
+
+    private val _userType = MutableStateFlow<UserType?> (null)
+    val userType = _userType.asStateFlow()
+
     // ------------✍️ input value -------------
 
     // ------------🔃 status ------------
@@ -55,6 +66,14 @@ class EventViewModel @Inject constructor(
 
     // ---------------- <<< Function >>> -----------------------
     // ----------- 🎮 update function-------------
+    fun updateUserId(id: Long) = run {
+        _userId.value = id
+    }
+
+    fun updateUserType(userType: UserType) = run {
+        _userType.value = userType
+    }
+
     fun updateEventStatus(status: EventStatus) {
         _eventStatus.value = status
     }
@@ -208,6 +227,12 @@ class EventViewModel @Inject constructor(
                     updateFreshCallStatus(ApiCallStatus.FAILED)
                 }
             }
+        }
+    }
+
+    fun favorite(advertisementId: Long) = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            val result = favoriteRepository.favorite(advertisementId)
         }
     }
 }
