@@ -81,7 +81,9 @@ fun MainScreen(
             MainScreenStatus.PROFILE -> {
                 when (userType.value) {
                     UserType.INFLUENCER -> {
-                        InfluencerProfileScreen()
+                        InfluencerProfileScreen(
+                            influencerId = userId.value
+                        )
                     }
 
                     UserType.ADVERTISER_COMMON -> {
