@@ -7,11 +7,10 @@ import com.example.marketing.dto.functions.response.GetOfferingInfluencerInfosRe
 import com.example.marketing.dto.functions.response.NewOfferReviewResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.HttpHeaders
-import io.ktor.http.headers
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
@@ -27,9 +26,7 @@ class ReviewOfferApi @Inject constructor(
                 NewOfferReviewRequest.of(requestModel)
             )
 
-            headers {
-                append(HttpHeaders.Authorization, token)
-            }
+            bearerAuth(token)
         }.body()
     }
 

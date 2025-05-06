@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,13 +36,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import com.example.marketing.enums.ChannelIcon
+import com.example.marketing.ui.color.MintCream
+import com.example.marketing.ui.color.SeaGreen
 import com.example.marketing.viewmodel.InfluencerProfileViewModel
 
 @Composable
@@ -47,12 +54,11 @@ fun InfluencerProfileScreen(
     viewModel: InfluencerProfileViewModel = hiltViewModel(),
     influencerId: Long
 ) {
-
-
     // ------------✍️ input value -------------
     // ------------🔃 status ------------
     // ----------- 🚀 api value -----------
     val profileInfo by viewModel.profileInfo.collectAsState()
+    val profileImage by viewModel.fetchedProfileImageByte.collectAsState()
 
     // ----------- 🔭 Launched Effect -------------
     LaunchedEffect(influencerId) {
@@ -100,9 +106,10 @@ fun InfluencerProfileScreen(
             // Put profile image or overlay here if needed
         }
 
-        Image(
-            painter = painterResource(id = ChannelIcon.BLOGGER.painterId), // Replace with your image
+        AsyncImage(
+            model = profileImage, // Replace with your image
             contentDescription = "Profile Image",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
                 .align(Alignment.TopStart)
@@ -114,7 +121,6 @@ fun InfluencerProfileScreen(
                 }// 60.dp = half of image size
                 .clip(CircleShape)
                 .border(2.dp, Color.White, CircleShape)
-                .padding(16.dp)
         )
 
 
@@ -125,45 +131,90 @@ fun InfluencerProfileScreen(
                 .fillMaxHeight()
                 .padding(
                     top = animatedHeight + 60.dp / 2,
-                    start = 16.dp,
-                    end = 16.dp
-                    ),
+                    start = 24.dp,
+                    end = 24.dp
+                    )
+            ,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
             item {
-                Spacer(Modifier.height(32.dp))
-                // UserID
-                profileInfo?.let {
-                    Text(it.influencerLoginId)
-                } ?: Text(
-                    "Login ID"
-                )
+                // User info Box
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp)
+                        .padding(top = 24.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        profileInfo?.let {
+                            Text(
+                                text = "@${it.influencerLoginId}",
+                                style = MaterialTheme.typography.displayMedium
+                            )
+                        } ?: Text(
+                            text = "user Id",
+                            style = MaterialTheme.typography.displayMedium
+                        )
+
+                        Text(
+                            text = profileInfo?.job ?: "no job",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                    }
+                }
             }
             // Add more UI content...
 
             item {
-                HorizontalDivider(
+                // user introduction & url ...
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    thickness = 8.dp,
-                    color = Color.LightGray
-                )
+                        .fillMaxWidth()
+                        .height(300.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "About",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
 
-                // about
-                profileInfo?.let {
-                    Text(it.introduction?: "Introduction")
-                } ?: Text("Introduction")
+                        Spacer(Modifier.height(6.dp))
+
+                        Text(
+                            text = profileInfo?.introduction ?: "introduction",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color(0x070707),
+                                    shape = RoundedCornerShape(3.dp) // optional rounded corners
+                                )
+                                .padding(16.dp) // give inner content some breathing room
+                        ) {
+                            Text(
+                                text = "😎 채널",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
+                    }
+                }
             }
 
             item {
-                Spacer(
-                    modifier = Modifier
-                        .height(4.dp)
-                        .background(Color.LightGray)
-                )
-
-                // Channel..
+                // reviewd
             }
         }
     }

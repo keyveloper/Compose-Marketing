@@ -70,7 +70,9 @@ fun MainScreen(
                         .fillMaxSize()
                         .background(Color.White)
                     ,
-                    navController = navController
+                    navController = navController,
+                    userId = userId.value,
+                    userType = userType.value
                 )
             }
 

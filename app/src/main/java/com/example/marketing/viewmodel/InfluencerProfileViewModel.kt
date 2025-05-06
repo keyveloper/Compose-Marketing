@@ -31,7 +31,7 @@ class InfluencerProfileViewModel @Inject constructor (
     val profileInfo = _profileInfo.asStateFlow()
 
     private val _fetchedProfileImageByte = MutableStateFlow<ByteArray?> (null)
-    val fetchedProfileImageByte = _fetchedProfileImageByte.value
+    val fetchedProfileImageByte = _fetchedProfileImageByte.asStateFlow()
 
 
     // ---------------- [Function] -----------------------

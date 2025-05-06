@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.marketing.domain.AdvertisementPackage
+import com.example.marketing.dto.functions.request.OfferReview
 import com.example.marketing.dto.functions.response.OfferingInfluencerInfo
 import com.example.marketing.repository.AdvertisementImageRepository
 import com.example.marketing.repository.AdvertisementRepository
@@ -32,7 +33,16 @@ class AdvertisementDetailViewModel @Inject constructor(
     private val _advertisementPackage = MutableStateFlow<AdvertisementPackage?>(null)
     val advertisementPackage = _advertisementPackage.asStateFlow()
 
+    // ------------✍️ input value -------------
+    private val _inputOffer = MutableStateFlow("")
+    val inputOffer = _inputOffer.asStateFlow()
+
+
     // ----------- 🎮 update  ----------
+    fun updateInputOffer(offer: String) = run {
+        _inputOffer.value = offer
+    }
+
     fun updateAdvertisementId(id: Long) = run {
         _advertisementId.value = id
         Log.i("adDetailVm", "updated adId = ${_advertisementId.value}")
@@ -97,6 +107,22 @@ class AdvertisementDetailViewModel @Inject constructor(
 
             withContext(Dispatchers.Main) {
                 addInfluencerInfos(infos)
+            }
+        }
+    }
+
+    fun offer() = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+
+            if (_advertisementId.value != null) {
+                val createdId = reviewOfferRepository.offer(
+                    OfferReview.of(
+                        offer = _inputOffer.value,
+                        advertisementId = advertisementId.value!!
+                    )
+                )
+            } else {
+                return@withContext
             }
         }
     }
