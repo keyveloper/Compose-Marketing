@@ -1,5 +1,9 @@
 package com.example.marketing.view
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,10 +22,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,24 +53,39 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.example.marketing.domain.InfluencerJoinedProfileInfo
-import com.example.marketing.viewmodel.InfluencerProfileViewModel
+import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.viewmodel.InfluencerProfileEditViewModel
 
 @Composable
-fun InfluencerProfileScreen(
-    viewModel: InfluencerProfileViewModel = hiltViewModel(),
+fun InfluencerProfileEditScreen(
+    viewModel: InfluencerProfileEditViewModel = hiltViewModel(),
     initProfileInfo: InfluencerJoinedProfileInfo
 ) {
     // ------------✍️ input value -------------
-    // ------------🔃 status ------------
-    // ----------- 🚀 api value -----------
     val profileInfo by viewModel.profileInfo.collectAsState()
-    val profileImage by viewModel.fetchedProfileImageByte.collectAsState()
+    var inputJob by remember { mutableStateOf("") }
+    var inputIntroduction by remember { mutableStateOf("") }
+    var inputProfileImgUri by remember { mutableStateOf<Uri?> (null) }
+
+    // ------------🔃 status ------------
+    val commitStatus by viewModel.commitStatus.collectAsState()
+    // ----------- 🚀 api value -----------
 
     // ----------- 🔭 Launched Effect -------------
-    LaunchedEffect(profileInfo) {
+    LaunchedEffect(initProfileInfo) {
         viewModel.init(initProfileInfo)
-        viewModel.fetchImageBytes()
     }
+
+
+    // ----------- 📦 lib- --------------
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        // 3️⃣ Handle the picked image URI
+        inputProfileImgUri = uri
+        viewModel.updateProfileImgUri(uri) // 📌 suspend function
+    }
+
 
     // ----------- 🖼️ uI ---------------
     val minHeight: Dp = 120.dp
@@ -95,6 +116,40 @@ fun InfluencerProfileScreen(
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
     ) {
+        IconButton( // 😎 오 이렇게 두면 상단 고정되네 ??
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+                .zIndex(5f),
+            onClick = {
+                if (commitStatus == ApiCallStatus.IDLE) {
+                    viewModel.uploadAll()
+                }
+            },
+        ) {
+            when (commitStatus) {
+                ApiCallStatus.IDLE -> {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "profile info edit save"
+                    )
+                }
+
+                ApiCallStatus.SUCCESS -> {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "profile info edit save",
+                        tint = Color(0xFF4CAF50)
+                    )
+                }
+                else -> {}
+            }
+        }
+
         // Scrollable Background Image
         Box(
             modifier = Modifier
@@ -105,22 +160,51 @@ fun InfluencerProfileScreen(
             // Put profile image or overlay here if needed
         }
 
-        AsyncImage(
-            model = profileImage, // Replace with your image
-            contentDescription = "Profile Image",
-            contentScale = ContentScale.Crop,
+        // profile image
+        val imageOffset = remember(animatedHeight) {
+            IntOffset(
+                x = with(density) { 16.dp.toPx() }.toInt(),
+                y = with(density) { (animatedHeight - 60.dp).toPx() }.toInt()
+            )
+        }
+
+        Box(
             modifier = Modifier
+                .offset { imageOffset }
                 .size(120.dp)
-                .align(Alignment.TopStart)
-                .offset {
-                    IntOffset(
-                        x = with(density) { 16.dp.toPx() }.toInt(),
-                        y = with(density) { (animatedHeight - 60.dp).toPx() }.toInt()
+                .zIndex(3f)
+        ) {
+            AsyncImage(
+                model = inputProfileImgUri, // Replace with your image
+                contentDescription = "Profile Image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .border(2.dp, Color.White, CircleShape)
+            )
+
+            IconButton(
+                onClick = {
+                    photoPickerLauncher.launch(
+                        // Only allow images
+                        PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
                     )
-                }// 60.dp = half of image size
-                .clip(CircleShape)
-                .border(2.dp, Color.White, CircleShape)
-        )
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)               // bottom-end of the 120×120 box
+                    .size(32.dp)                              // choose an icon size
+                    .background(Color(0xf9f9f9f9), CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ModeEdit,
+                    contentDescription = "Edit image",
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
 
 
         // Rest of the content (not scrollable with background)
@@ -132,7 +216,7 @@ fun InfluencerProfileScreen(
                     top = animatedHeight + 60.dp / 2,
                     start = 24.dp,
                     end = 24.dp
-                    )
+                )
             ,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -141,7 +225,7 @@ fun InfluencerProfileScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(130.dp)
+                        .height(165.dp)
                         .padding(top = 24.dp)
                 ) {
                     Column(
@@ -159,9 +243,14 @@ fun InfluencerProfileScreen(
                             style = MaterialTheme.typography.displayMedium
                         )
 
-                        Text(
-                            text = profileInfo?.job ?: "no job",
-                            style = MaterialTheme.typography.headlineMedium
+                        OutlinedTextField(                 // 2️⃣ decorate only
+                            value = inputJob,
+                            onValueChange = {
+                                inputJob = it
+                                viewModel.updateJob(it)
+                            },            // no typing
+                            label = { Text("👤 직업") },
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
@@ -187,9 +276,15 @@ fun InfluencerProfileScreen(
 
                         Spacer(Modifier.height(6.dp))
 
-                        Text(
-                            text = profileInfo?.introduction ?: "introduction",
-                            style = MaterialTheme.typography.titleMedium
+                        OutlinedTextField(                 // 2️⃣ decorate only
+                            value = inputIntroduction,
+                            onValueChange = {
+                                inputIntroduction = it
+                                viewModel.updateIntroduction(it)
+                            },            // no typing
+                            label = { Text("😎 Who are you?") },
+                            modifier = Modifier.fillMaxWidth()
+                                .height(300.dp)
                         )
 
                         Box(
@@ -198,7 +293,7 @@ fun InfluencerProfileScreen(
                                 .height(250.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = Color(0x070707),
+                                    color = Color(0xFF070707),
                                     shape = RoundedCornerShape(3.dp) // optional rounded corners
                                 )
                                 .padding(16.dp) // give inner content some breathing room

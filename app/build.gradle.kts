@@ -123,6 +123,9 @@ dependencies {
 
     // coil for img
     implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+    implementation("io.ktor:ktor-client-android:3.0.1")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.1.0")
+
 
     // jwt token storage (jetpack security)
     implementation("androidx.security:security-crypto:1.1.0-alpha06")

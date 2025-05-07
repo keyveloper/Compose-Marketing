@@ -26,7 +26,6 @@ import com.example.marketing.view.SplashV1Screen
 fun AppNavGraph(
     navController: NavHostController= rememberNavController(),
 ) {
-
     NavHost(
         navController = navController,
         startDestination = ScreenRoute.SPLASH.route

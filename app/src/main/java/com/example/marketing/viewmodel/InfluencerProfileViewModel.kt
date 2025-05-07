@@ -1,15 +1,12 @@
 package com.example.marketing.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.marketing.domain.InfluencerJoinedProfileInfo
 import com.example.marketing.repository.InfluencerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -17,10 +14,6 @@ import javax.inject.Inject
 class InfluencerProfileViewModel @Inject constructor (
     private val influencerRepository: InfluencerRepository
 ): ViewModel() {
-
-    // ------------✍️ input value -------------
-    private val _influencerId = MutableStateFlow<Long?> (null)
-    val influencerId = _influencerId.asStateFlow()
 
 
     // ------------🔃 status ------------
@@ -36,15 +29,11 @@ class InfluencerProfileViewModel @Inject constructor (
 
     // ---------------- [Function] -----------------------
     // ----------- 🎮 update function-------------
-    fun updateInfluencerId(id: Long) = run {
-        _influencerId.value = id
+    fun init(profileInfo: InfluencerJoinedProfileInfo) {
+        _profileInfo.value = profileInfo
     }
 
-    fun updateProfileInfo(info: InfluencerJoinedProfileInfo) = run {
-        _profileInfo.value = info
-    }
-
-    fun updateProfileImageByte(bytes: ByteArray) = run {
+    private fun updateProfileImageByte(bytes: ByteArray) = run {
         _fetchedProfileImageByte.value = bytes
     }
 
@@ -52,30 +41,19 @@ class InfluencerProfileViewModel @Inject constructor (
 
 
     // ----------- 🛜 API -----------------------
-    suspend fun fetchProfileInfo() =
-        withContext(Dispatchers.IO) {
-            if (_influencerId.value != null) {
-                val domain = influencerRepository.fetchProfileInfo(_influencerId.value!!)
-                    ?: return@withContext
+    suspend fun fetchImageBytes() {
+        if(_profileInfo.value != null && _fetchedProfileImageByte.value == null) {
+            val unifiedCode = _profileInfo.value!!.unifiedImageCode
 
-                val unifiedCode = domain.unifiedImageCode
-
-                if (unifiedCode != null) {
-                    val imageBytes = async(Dispatchers.IO) {
-                        influencerRepository.fetchProfileImageByte(unifiedCode)
-                    }.await()
+            if (unifiedCode != null) {
+                withContext(Dispatchers.IO) {
+                    val imageBytes = influencerRepository.fetchProfileImageByte(unifiedCode)
 
                     withContext(Dispatchers.Main) {
-                        updateProfileInfo(domain)
                         updateProfileImageByte(imageBytes)
-
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        updateProfileInfo(domain)
                     }
                 }
             }
         }
-
+    }
 }

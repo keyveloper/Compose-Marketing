@@ -9,18 +9,19 @@ import com.example.marketing.enums.UserType
 import com.example.marketing.repository.AdvertisementEventRepository
 import com.example.marketing.repository.AdvertisementImageRepository
 import com.example.marketing.repository.FavoriteRepository
-import com.example.marketing.repository.ReviewOfferRepository
 import com.example.marketing.ui.component.AdvertisementThumbnailItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
@@ -94,27 +95,6 @@ class EventViewModel @Inject constructor(
         _thumbnailCallStatus.value = status  // ✅ Correct
     }
 
-    private fun checkTotalApiCallStatus(eventStatus: EventStatus) = run {
-        when (eventStatus) {
-            EventStatus.FRESH -> {
-                if (freshCallStatus.value == ApiCallStatus.SUCCESS &&
-                    _thumbnailCallStatus.value == ApiCallStatus.SUCCESS) {
-                    _totalApiCAllStatus.value = ApiCallStatus.SUCCESS
-                }
-            }
-
-            EventStatus.DEADLINE -> {
-                if (deadlineCallStatus.value == ApiCallStatus.SUCCESS &&
-                    _thumbnailCallStatus.value == ApiCallStatus.SUCCESS) {
-                    _totalApiCAllStatus.value = ApiCallStatus.SUCCESS
-                }
-            }
-
-            else -> {
-
-            }
-        }
-    }
 
     private fun addPackages(packages: List<AdvertisementPackage>) {
         _packages.value += packages
@@ -124,10 +104,9 @@ class EventViewModel @Inject constructor(
         _thumbnailItems.value += items
     }
 
-    fun clearItems() {
+    private fun clearItems() {
         _packages.value = listOf()
         _thumbnailItems.value = listOf()
-        updateEventStatus(EventStatus.IDLE)
     }
     // -------------🔍 inspection -----------
     init {
@@ -141,21 +120,11 @@ class EventViewModel @Inject constructor(
     // ----------- 🛜 API -----------------------
 
     fun testFetch() = viewModelScope.launch(Dispatchers.IO) {
+        clearItems()
         try {
             val pkg = advertisementEventRepository.testFetch()
 
-            val thumb = supervisorScope {
-                async {
-                    val bytes = kotlin.runCatching {
-                        advertisementImageRepository.fetchImageBytes(
-                            pkg!!.advertisementGeneralFields.thumbnailUri)
-                    }.getOrNull()
-                    AdvertisementThumbnailItem.of(pkg!!.advertisementGeneralFields, bytes)
-                }
-            }.await()
-
             withContext(Dispatchers.Main) {
-                addThumbnailItems(listOf(thumb))
                 updateFreshCallStatus(ApiCallStatus.SUCCESS)
                 updateThumbnailStatus(ApiCallStatus.SUCCESS)
             }
@@ -166,65 +135,41 @@ class EventViewModel @Inject constructor(
         }
     }
 
-    fun fetchFreshWithThumbnail() = viewModelScope.launch(Dispatchers.IO) {
-        updateFreshCallStatus(ApiCallStatus.LOADING)
-        updateThumbnailStatus(ApiCallStatus.LOADING)
-        updateTotalApiCAllStatus(ApiCallStatus.LOADING)
-
-        try {
+    fun fetchFreshWithThumbnail() = viewModelScope.launch {
+        clearItems()
+        withContext(Dispatchers.IO) {
             val packages = advertisementEventRepository.fetchFresh()
-
-            val thumbs = supervisorScope {
-                packages.map { pkg ->
-                    async {
-                        val bytes = runCatching {
-                            advertisementImageRepository.fetchImageBytes(pkg.advertisementGeneralFields.thumbnailUri)
-                        }.getOrNull()
-                        AdvertisementThumbnailItem.of(pkg.advertisementGeneralFields, bytes)
-                    }
-                }.awaitAll()
+            val thumbnailItems = packages.map {
+                AdvertisementThumbnailItem.of(
+                    generalFields = it.advertisementGeneralFields,
+                    unifiedCode =
+                    it.advertisementGeneralFields.thumbnailUri?.substringAfterLast('/')
+                )
             }
 
             withContext(Dispatchers.Main) {
-                addThumbnailItems(thumbs)
-                updateFreshCallStatus(ApiCallStatus.SUCCESS)
-                updateThumbnailStatus(ApiCallStatus.SUCCESS)
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                updateFreshCallStatus(ApiCallStatus.FAILED)
+                addPackages(packages)
+                addThumbnailItems(thumbnailItems)
             }
         }
     }
 
     suspend fun fetchDeadlineWithThumbnail() {
+        clearItems()
         viewModelScope.launch(Dispatchers.IO) {
-            updateDeadlineCallStatus(ApiCallStatus.LOADING)
-
-            try {
+            withContext(Dispatchers.IO) {
                 val packages = advertisementEventRepository.fetchDeadline()
-
-                val itemsDeferred = packages.map { pkg ->
-                    async {
-                        val bytes = advertisementImageRepository.fetchImageBytes(
-                            pkg.advertisementGeneralFields.thumbnailUri)
-                        // Build your UI model
-                        AdvertisementThumbnailItem.of(
-                            generalFields = pkg.advertisementGeneralFields,
-                            imageBytes = bytes
-                        )
-                    }
+                val thumbnailItems = packages.map {
+                    AdvertisementThumbnailItem.of(
+                        generalFields = it.advertisementGeneralFields,
+                        unifiedCode =
+                        it.advertisementGeneralFields.thumbnailUri?.substringAfterLast('/')
+                    )
                 }
-                val thumbnailItems = itemsDeferred.awaitAll()
 
-                // 3) Emit final state in one go
                 withContext(Dispatchers.Main) {
+                    addPackages(packages)
                     addThumbnailItems(thumbnailItems)
-                    updateDeadlineCallStatus(ApiCallStatus.SUCCESS)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    updateFreshCallStatus(ApiCallStatus.FAILED)
                 }
             }
         }
