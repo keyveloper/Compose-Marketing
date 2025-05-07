@@ -11,12 +11,12 @@ data class AdvertisementThumbnailItem(
     val itemName: String,
     val channelType: ChannelType,
     val reviewType: ReviewType,
-    val imageBytes: ByteArray?
+    val unifiedCode: String?
 ) {
     companion object {
         fun of(
             generalFields: AdvertisementGeneralFields,
-            imageBytes: ByteArray?
+            unifiedCode: String?
         ): AdvertisementThumbnailItem = AdvertisementThumbnailItem(
             advertisementId = generalFields.id,
             thumbnailUri = generalFields.thumbnailUri,
@@ -24,7 +24,7 @@ data class AdvertisementThumbnailItem(
             itemName = generalFields.itemName,
             channelType = generalFields.channelType,
             reviewType = generalFields.reviewType,
-            imageBytes = imageBytes
+            unifiedCode = unifiedCode
         )
     }
 }

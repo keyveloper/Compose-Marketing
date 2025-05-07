@@ -20,6 +20,6 @@ class AdvertisementEventApi @Inject constructor(
     }
 
     suspend fun fetchDeadline(): GetAdvertisementDeadlineResponse {
-        return httpClient.get("/open/advertisements/fresh").body()
+        return httpClient.get("/open/advertisements/deadline").body()
     }
 }

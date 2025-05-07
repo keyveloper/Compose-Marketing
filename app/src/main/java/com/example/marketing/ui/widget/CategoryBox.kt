@@ -24,7 +24,7 @@ fun CategoryBox(
     emoji: String?,
     icon: @Composable () -> Unit,
     onCategorySelected: (EventStatus) -> Unit,
-    eventCode: Int,
+    eventStatus: EventStatus,
     ) {
     Box(
         modifier = modifier
@@ -35,11 +35,7 @@ fun CategoryBox(
             shape = RoundedCornerShape(8.dp)
             )
             .clickable {
-                val status = EventStatus.fromCode(eventCode)
-
-                status?.let {
-                    onCategorySelected(status)
-                }
+                onCategorySelected(eventStatus)
             },
         contentAlignment = Alignment.Center
 

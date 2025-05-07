@@ -1,5 +1,6 @@
 package com.example.marketing.view
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -51,18 +52,17 @@ fun EventScreen(
     }
 
     LaunchedEffect(eventStatus) {
+        Log.i("eventScreen", "eventStatus $eventStatus")
         when (eventStatus) {
             EventStatus.IDLE -> {
                 viewModel.testFetch()
             }
 
             EventStatus.FRESH-> {
-                viewModel.clearItems()
                 viewModel.fetchFreshWithThumbnail()
             }
 
             EventStatus.DEADLINE -> {
-                viewModel.clearItems()
                 viewModel.fetchDeadlineWithThumbnail()
             }
 
@@ -87,7 +87,6 @@ fun EventScreen(
         state = listState,
         modifier = modifier
             .fillMaxSize()
-            .background(Color.LightGray)
     ) {
         // 헤더 영역
         item {
@@ -102,7 +101,7 @@ fun EventScreen(
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     CategoryBox(
                         emoji = "🔥",
-                        eventCode = 1,
+                        eventStatus = EventStatus.HOT,
                         icon = {},
                         onCategorySelected = { status ->
                             viewModel.updateEventStatus(status)
@@ -110,7 +109,7 @@ fun EventScreen(
                     )
                     CategoryBox(
                         emoji = "☠️",
-                        eventCode = 2,
+                        eventStatus = EventStatus.DEADLINE,
                         icon = {},
                         onCategorySelected = { status ->
                             viewModel.updateEventStatus(status)
@@ -118,7 +117,7 @@ fun EventScreen(
                     )
                     CategoryBox(
                         emoji = "🍎",
-                        eventCode = 0,
+                        eventStatus = EventStatus.FRESH,
                         icon = {},
                         onCategorySelected = { status ->
                             viewModel.updateEventStatus(status)
@@ -138,11 +137,35 @@ fun EventScreen(
         item {
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = "Timeline State Here",
-                style = MaterialTheme.typography.titleLarge
-            )
+            when(eventStatus) {
+                EventStatus.FRESH -> {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = "😎 오늘 올라온 광고를 확인하세요",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+                EventStatus.DEADLINE -> {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = "⌛ 이런...! 모집 시간이 얼마 남지 않았어요",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+
+                EventStatus.HOT -> {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = "🔥 요즘은 이런 광고가 인기있어요",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+
+                else -> {
+
+                }
+            }
+
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -157,7 +180,6 @@ fun EventScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 rowItems.forEach { thumb ->
-
                     if (userType == UserType.INFLUENCER) {
                         VerticalAdvertisementThumbnail(
                             item = thumb,
@@ -188,7 +210,6 @@ fun EventScreen(
                     }
 
                 }
-
                 // Fill empty space if only 1 item in last row
                 if (rowItems.size < 2) {
                     Spacer(modifier = Modifier.weight(1f))
