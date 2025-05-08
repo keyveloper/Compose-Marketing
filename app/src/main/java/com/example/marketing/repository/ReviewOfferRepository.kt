@@ -1,6 +1,7 @@
 package com.example.marketing.repository
 
 import com.example.marketing.api.ReviewOfferApi
+import com.example.marketing.domain.InfluencerValidReviewOfferAd
 import com.example.marketing.dto.functions.request.OfferReview
 import com.example.marketing.dto.functions.response.OfferingInfluencerInfo
 import javax.inject.Inject
@@ -27,6 +28,16 @@ class ReviewOfferRepository @Inject constructor(
             null
         } else {
             response.createdEntityId
+        }
+    }
+
+    suspend fun fetchAllValidOfferByInfluencerId(): List<InfluencerValidReviewOfferAd>  {
+        val response = reviewOfferApi.fetchAllValidOfferByInfluencerId()
+
+        return if (response.frontErrorCode != 20000) {
+            listOf()
+        } else {
+            response.result
         }
     }
 }

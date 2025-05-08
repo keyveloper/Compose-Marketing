@@ -4,7 +4,7 @@ enum class MainScreenStatus(val code: Int) {
     HOME(0),
     LOCATION_NEAR(1),
     LOCATION_MAP(2),
-    FOLLOW(3),
+    FAVORITE(3),
     GOLDEN(4),
     PROFILE(5),
     ADVERTISER_WRITE(6);

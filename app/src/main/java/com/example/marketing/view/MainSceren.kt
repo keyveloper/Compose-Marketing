@@ -76,8 +76,18 @@ fun MainScreen(
                 )
             }
 
-            MainScreenStatus.FOLLOW -> {
-
+            MainScreenStatus.FAVORITE-> {
+                FavoriteScreen(
+                    modifier = Modifier
+                        .padding(
+                            top = 56.dp,
+                            bottom = 56.dp,
+                        )
+                        .fillMaxSize()
+                        .background(Color.White)
+                    ,
+                    navController = navController
+                )
             }
 
             MainScreenStatus.PROFILE -> {

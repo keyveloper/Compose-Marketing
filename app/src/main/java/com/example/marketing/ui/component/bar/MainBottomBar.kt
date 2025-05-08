@@ -67,7 +67,7 @@ fun MainBottomBar(
             when (userType) {
                 UserType.INFLUENCER -> {
                     IconButton(
-                        onClick = { onStatusChange(MainScreenStatus.FOLLOW) }
+                        onClick = { onStatusChange(MainScreenStatus.FAVORITE) }
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.FavoriteBorder,

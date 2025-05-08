@@ -4,7 +4,7 @@ import com.example.marketing.dao.JwtTokenDao
 import com.example.marketing.dto.functions.request.FavoriteAdRequest
 import com.example.marketing.dto.functions.request.FavoriteAdvertisement
 import com.example.marketing.dto.functions.response.FavoriteAdResponse
-import com.example.marketing.dto.functions.response.GetFavoriteAdsResponse
+import com.example.marketing.dto.functions.response.GetInfluencerPersonalFavoriteAdsResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
@@ -30,11 +30,12 @@ class FavoriteApi @Inject constructor(
         }.body()
     }
 
-    suspend fun fetchAllAds(): GetFavoriteAdsResponse {
+    suspend fun fetchAllAdsWithThumbnail(): GetInfluencerPersonalFavoriteAdsResponse {
         val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
 
-        return httpClient.get("/favorite/ads") {
+        return httpClient.get("/favorite/ads/influencer-personal") {
             bearerAuth(token)
         }.body()
     }
 }
+

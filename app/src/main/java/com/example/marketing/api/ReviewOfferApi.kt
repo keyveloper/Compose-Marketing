@@ -4,6 +4,7 @@ import com.example.marketing.dao.JwtTokenDao
 import com.example.marketing.dto.functions.request.NewOfferReviewRequest
 import com.example.marketing.dto.functions.request.OfferReview
 import com.example.marketing.dto.functions.response.GetOfferingInfluencerInfosResponse
+import com.example.marketing.dto.functions.response.GetValidReviewOfferAdResponse
 import com.example.marketing.dto.functions.response.NewOfferReviewResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -35,5 +36,13 @@ class ReviewOfferApi @Inject constructor(
     ): GetOfferingInfluencerInfosResponse {
         return httpClient.get("/open/review-offers/$advertisementId")
             .body()
+    }
+
+    suspend fun fetchAllValidOfferByInfluencerId(): GetValidReviewOfferAdResponse {
+        val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
+
+        return httpClient.get("/review-offers/influencer-valid") {
+            bearerAuth(token)
+        }.body()
     }
 }

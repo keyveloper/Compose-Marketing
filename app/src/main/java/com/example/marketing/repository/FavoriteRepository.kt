@@ -1,6 +1,7 @@
 package com.example.marketing.repository
 
 import com.example.marketing.api.FavoriteApi
+import com.example.marketing.domain.InfluencerFavoriteAdWithThumbnail
 import com.example.marketing.dto.functions.request.FavoriteAdvertisement
 import com.example.marketing.dto.functions.response.FavoriteAdResult
 import javax.inject.Inject
@@ -15,6 +16,16 @@ class FavoriteRepository @Inject constructor(
 
         return if (response.frontErrorCode != 20000) {
             null
+        } else {
+            response.result
+        }
+    }
+
+    suspend fun fetchAllAdsWithThumbnail(): List<InfluencerFavoriteAdWithThumbnail> {
+        val response = favoriteApi.fetchAllAdsWithThumbnail()
+
+        return if (response.frontErrorCode != 20000) {
+            listOf()
         } else {
             response.result
         }
