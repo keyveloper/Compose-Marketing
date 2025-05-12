@@ -1,13 +1,12 @@
 package com.example.marketing.viewmodel
 
-import android.util.Log
+import androidx.compose.runtime.key
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.marketing.dto.keyword.FetchGoldenKeywords
-import com.example.marketing.dto.keyword.GoldenKeywordStat
-import com.example.marketing.enums.GoldenKeywordScreenStatus
+import com.example.marketing.domain.DugKeywordCandidate
+import com.example.marketing.dto.keyword.request.DigKeywordCandidates
 import com.example.marketing.enums.GoldenKeywordFetchStatus
-import com.example.marketing.exception.BusinessException
+import com.example.marketing.enums.GoldenKeywordScreenStatus
 import com.example.marketing.repository.GoldenKeywordRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,67 +14,93 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class GoldenKeywordViewModel @Inject constructor(
     private val goldenKeywordRepository: GoldenKeywordRepository
 ): ViewModel() {
-    private val _screenStatus = MutableStateFlow(GoldenKeywordScreenStatus.IDLE)
-    val screenStatus = _screenStatus.asStateFlow()
 
+    // ------------✍️ input value -------------
+    private val _keyword = MutableStateFlow<String?>(null)
+    val keyword: StateFlow<String?> =_keyword.asStateFlow()
+
+    private val _context = MutableStateFlow<String?> (null)
+    val context = _context.asStateFlow()
+
+    // ------------🔃 status ------------
     private val _fetchStatus = MutableStateFlow(GoldenKeywordFetchStatus.IDLE)
     val fetchStatus = _fetchStatus.asStateFlow()
 
-    private val _searchKeyword = MutableStateFlow("")
-    val searchKeyword: StateFlow<String> =_searchKeyword.asStateFlow()
+    private val _screenStatus = MutableStateFlow(GoldenKeywordScreenStatus.INIT)
+    val screenStatus = _screenStatus.asStateFlow()
 
-    private val _goldenKeywords = MutableStateFlow<List<GoldenKeywordStat>> (listOf())
-    val goldenKeywords: StateFlow<List<GoldenKeywordStat>> = _goldenKeywords.asStateFlow()
+    // ----------- 🚀 from server value -----------
+    private val _candidates = MutableStateFlow(listOf<DugKeywordCandidate>())
+    val candidates = _candidates.asStateFlow()
 
-    private val _selectedGoldenKeyword = MutableStateFlow<GoldenKeywordStat?> (null)
-    val selectedGoldenKeyword: StateFlow<GoldenKeywordStat?> = _selectedGoldenKeyword.asStateFlow()
-
-    fun updatedSearchKeyword(keyword: String) {
-        _searchKeyword.value = keyword
+    // ---------------- [Function] -----------------------
+    // ----------- 🎮 update function-------------
+    fun updateKeyword(keyword: String) {
+        _keyword.value = keyword
     }
 
-    fun updateSelectedKeyword(keyword: String) {
-        _selectedGoldenKeyword.value = _goldenKeywords.value.find {it.keyword == keyword}
-        updateScreenStatus(GoldenKeywordScreenStatus.VIEW_DETAIL)
+    fun updateContext(context: String) {
+        _context.value = context
     }
 
-    fun updateScreenStatus(state: GoldenKeywordScreenStatus) {
-        _screenStatus.value = state
+    fun updateFetchStatus(status: GoldenKeywordFetchStatus) {
+        _fetchStatus.value = status
     }
 
-    private fun updateFetchStatus(state: GoldenKeywordFetchStatus) {
-        _fetchStatus.value = state
+    fun updateScreenStatus(status: GoldenKeywordScreenStatus) {
+        _screenStatus.value = status
     }
 
-    private fun setGoldenKeywords(goldenKeywords: List<GoldenKeywordStat>) {
-        _goldenKeywords.value = goldenKeywords
+    fun setCandidates() {
+        _candidates.value = listOf()
+    }
+    private fun updateCandidates(candidates: List<DugKeywordCandidate>) {
+        _candidates.value += candidates
     }
 
-    fun fetchGoldenKeywords() {
-        viewModelScope.launch {
-            val requestModel = FetchGoldenKeywords(keyword = _searchKeyword.value)
 
-            try {
-                Log.i("goldenKeywordViewModel", "start send request: ${requestModel}")
-                updateFetchStatus(GoldenKeywordFetchStatus.LOADING)
-                val goldenKeywords= goldenKeywordRepository.fetchGoldenKeywords(requestModel)
-                viewModelScope.launch(Dispatchers.Main) {
-                    setGoldenKeywords(goldenKeywords)
-                    updateFetchStatus(GoldenKeywordFetchStatus.SUCCESS)
-                    updateScreenStatus(GoldenKeywordScreenStatus.FETCHED)
+
+    // -------------🔍 inspection -----------
+    fun canDig(): Boolean {
+        val keyword = _keyword.value
+        val context = _context.value
+
+        return keyword != null && context != null &&
+            keyword.isNotEmpty() && context.isNotEmpty()
+    }
+
+    // ----------- 🛜 API -----------------------
+    fun digCandidates() = viewModelScope.launch {
+        if (canDig()) {
+            val keyword = _keyword.value!!
+            val context = _context.value!!
+
+            withContext(Dispatchers.IO) {
+                    setCandidates()
+                    val candidates = goldenKeywordRepository.fetchDugCandidates(
+                        DigKeywordCandidates.of(
+                            keyword = keyword,
+                            context = context
+                        )
+                    )
+
+                    if (candidates.isNotEmpty()) {
+                        withContext(Dispatchers.Main) {
+                            updateCandidates(candidates)
+                            updateScreenStatus(GoldenKeywordScreenStatus.CANDIDATES)
+                        }
+                    }
+
+                    _fetchStatus.value = GoldenKeywordFetchStatus.SUCCESS
                 }
-            } catch(e: BusinessException) {
-                updateFetchStatus(GoldenKeywordFetchStatus.ERROR)
-            } catch(e: Exception) {
-                updateFetchStatus(GoldenKeywordFetchStatus.ERROR)
-                Log.e("goldenKeywordViewModel", "${e.message}")
-            }
+
         }
     }
 }
