@@ -36,12 +36,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import com.example.marketing.domain.AdvertiserProfileInfo
 import com.example.marketing.enums.ChannelIcon
 import com.example.marketing.ui.color.PastelPea
 import com.example.marketing.viewmodel.AdvertiserProfileViewModel
@@ -51,19 +58,20 @@ import kotlinx.coroutines.flow.first
 @Composable
 fun AdvertiserProfileScreen(
     viewModel: AdvertiserProfileViewModel = hiltViewModel(),
-    initAdvertiserId: Long
+    navController: NavController,
+    profileInfo: AdvertiserProfileInfo
 ) {
-    val advertiserId = viewModel.advertiserId.collectAsState()
-    val profile = viewModel.profile.collectAsState()
-
+    // ------------🔃 status ------------
+    // ----------- 🚀 api value -----------
+    val baseUrl = "http://192.168.223.89:8080/open/advertiser/image/profile"
+    val bgUrl = "$baseUrl/${profileInfo.backgroundUnifiedCode}"
+    val profileUrl = "$baseUrl/${profileInfo.profileUnifiedCode}"
+    // ----------- 🔭 Launched Effect -------------
     LaunchedEffect(Unit) {
-        viewModel.updateAdvertiserId(initAdvertiserId)
-        snapshotFlow { advertiserId.value }
-            .filter { it != -1L }
-            .first()
-            .let { viewModel.fetchProfile(it) }
+        viewModel.updateProfileInfo(profileInfo)
     }
 
+    // ----------- 🖼️ uI ---------------
     val minHeight: Dp = 120.dp
     val maxHeight: Dp = 250.dp
     val density = LocalDensity.current
@@ -99,12 +107,25 @@ fun AdvertiserProfileScreen(
                 .height(animatedHeight)
                 .background(Color.Gray)
         ) {
-            // Put profile image or overlay here if needed
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(bgUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Advertiser background image",
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
         }
 
-        Image(
-            painter = painterResource(id = ChannelIcon.BLOGGER.painterId), // Replace with your image
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(profileUrl)
+                .crossfade(true)
+                .build(), // Replace with your image
             contentDescription = "Profile Image",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
                 .align(Alignment.TopStart)
@@ -116,7 +137,6 @@ fun AdvertiserProfileScreen(
                 }// 60.dp = half of image size
                 .clip(CircleShape)
                 .border(2.dp, Color.White, CircleShape)
-                .padding(16.dp)
         )
 
         LazyColumn(
@@ -142,23 +162,18 @@ fun AdvertiserProfileScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = profile.value?.companyName ?: "",
+                            text = profileInfo.companyName,
                             style = MaterialTheme.typography.titleLarge
                         )
 
                         Text(
-                            text = profile.value?.companyInfo ?: "",
+                            text = profileInfo.serviceInfo,
                             style = MaterialTheme.typography.titleSmall
                         )
 
                         Text(
-                            text = profile.value?.companyLocation ?: "",
+                            text = profileInfo.locationBrief,
                             style = MaterialTheme.typography.displaySmall
-                        )
-
-                        Text(
-                            text = profile.value?.followerCount.toString(),
-                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 }
@@ -181,7 +196,7 @@ fun AdvertiserProfileScreen(
                         )
 
                         Text(
-                            text = profile.value?.introduction ?: "",
+                            text = profileInfo.introduction ?: "",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }

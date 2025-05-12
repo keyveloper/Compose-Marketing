@@ -73,15 +73,10 @@ import com.example.marketing.enums.ChannelType
 import com.example.marketing.enums.DeliveryCategory
 import com.example.marketing.enums.ReviewIcon
 import com.example.marketing.enums.ReviewType
-import com.example.marketing.ui.color.CottonCandy
 import com.example.marketing.ui.color.MintCream
-import com.example.marketing.ui.color.PastelBerry
 import com.example.marketing.ui.color.PastelTeal
-import com.example.marketing.ui.color.PersianPastel
 import com.example.marketing.ui.color.SeaGreen
 import com.example.marketing.ui.color.SoftGray
-import com.example.marketing.ui.color.SunOrange
-import com.example.marketing.ui.color.WatermelonSorbet
 import com.example.marketing.ui.component.DeliveryCategorySelectionCard
 import com.example.marketing.ui.component.RangeDatePicker
 import com.example.marketing.ui.component.SingleDatePicker
@@ -169,8 +164,7 @@ fun AdvertisementWritingScreen(
         val scrollState = rememberScrollState()
         Column(
             modifier = modifier
-                .verticalScroll(scrollState)
-                .background(PersianPastel),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -178,7 +172,6 @@ fun AdvertisementWritingScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(SeaGreen)
             ) {
                 val pagerState = rememberPagerState(
                     pageCount = { imageItems.value.size.coerceAtLeast(1) }
@@ -187,14 +180,12 @@ fun AdvertisementWritingScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 12.dp, horizontal = 6.dp)
-                        .background(PastelBerry)
                 ) {
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier
                             .fillMaxSize()
                             .height(500.dp)
-                            .background(MintCream)
                     ) { currentPage ->
                         Log.i("advertisementWriting", "currentPage: $currentPage")
                         selectedPage = currentPage
@@ -203,7 +194,6 @@ fun AdvertisementWritingScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(CottonCandy)
                         ) {
 
                             AsyncImage(
@@ -216,7 +206,6 @@ fun AdvertisementWritingScreen(
                                             bottomStart = 16.dp, bottomEnd = 16.dp
                                         )
                                     )
-                                    .background(Color.White)
                                     .border(
                                         width = 3.dp,
                                         color = SoftGray,
@@ -305,7 +294,6 @@ fun AdvertisementWritingScreen(
                     .fillMaxWidth()
                     .height(550.dp)
                     .padding(vertical = 8.dp, horizontal = 16.dp)
-                    .background(SunOrange)
             ) {
                 Column(
                     modifier = Modifier
@@ -524,7 +512,6 @@ fun AdvertisementWritingScreen(
                     .fillMaxWidth()
                     .height(440.dp)
                     .padding(16.dp)
-                    .background(SeaGreen)
             ) {
                 Column(
                     modifier = Modifier
@@ -587,7 +574,6 @@ fun AdvertisementWritingScreen(
                     .fillMaxWidth()
                     .height(250.dp)
                     .padding(16.dp)
-                    .background(WatermelonSorbet)
             ) {
                 Column(
                     modifier = Modifier

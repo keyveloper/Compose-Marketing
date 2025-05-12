@@ -143,5 +143,4 @@ dependencies {
 
     // json for multipart/from-data
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-
 }

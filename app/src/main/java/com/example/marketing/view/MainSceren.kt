@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.marketing.enums.MainScreenStatus
+import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.enums.UserType
 import com.example.marketing.ui.component.bar.MainBottomBar
 import com.example.marketing.ui.component.bar.MainTopBar
@@ -31,7 +33,7 @@ fun MainScreen(
 ) {
     val screenStatus = viewModel.screenStatus.collectAsState()
     val userType = viewModel.userType.collectAsState()
-    val userId = viewModel.userId.collectAsState()
+    val userId by viewModel.userId.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.updateUserType(userInitType)
@@ -71,7 +73,7 @@ fun MainScreen(
                         .background(Color.White)
                     ,
                     navController = navController,
-                    userId = userId.value,
+                    userId = userId,
                     userType = userType.value
                 )
             }
@@ -93,14 +95,13 @@ fun MainScreen(
             MainScreenStatus.PROFILE -> {
                 when (userType.value) {
                     UserType.INFLUENCER -> {
-                        InfluencerProfileControlScreen(
-                            influencerId = userId.value,
-                        )
+                        navController.navigate(
+                            ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/$userId")
                     }
 
                     UserType.ADVERTISER_COMMON -> {
-                        AdvertiserProfileScreen(
-                            initAdvertiserId = userId.value
+                        navController.navigate(
+                            ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/$userId"
                         )
                     }
 

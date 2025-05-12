@@ -8,17 +8,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.enums.ScreenRoute
 import com.example.marketing.enums.UserType
 import com.example.marketing.view.AdvertisementDetailScreen
 import com.example.marketing.view.AdvertiserLoginScreen
+import com.example.marketing.view.AdvertiserProfileControlScreen
 import com.example.marketing.view.AdvertiserSignUpScreen
 import com.example.marketing.view.AuthHealthCheckScreen
 import com.example.marketing.view.AuthHomeScreen
 import com.example.marketing.view.InfluencerLoginScreen
+import com.example.marketing.view.InfluencerProfileControlScreen
 import com.example.marketing.view.InfluencerSignUpScreen
-import com.example.marketing.view.MainInItScreen
 import com.example.marketing.view.MainScreen
 import com.example.marketing.view.SplashV1Screen
 
@@ -124,6 +124,33 @@ fun AppNavGraph(
                 val advertisementId = backStackEntry.arguments?.getLong("advertisementId") ?: 0
                 AdvertisementDetailScreen(
                     advertisementId = advertisementId
+                )
+            }
+
+            composable(
+                route = ScreenRoute.MAIN_PROFILE_INFLUENCER.route + "/{influencerId}",
+                arguments = listOf(navArgument("influencerId") {
+                    type = NavType.LongType
+                })
+            ) { backStackEntry ->
+                val influencerId = backStackEntry.arguments?.getLong("influencerId") ?: 0
+                InfluencerProfileControlScreen(
+                    navController = navController,
+                    influencerId = influencerId
+                )
+            }
+
+
+            composable(
+                route = ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/{advertiserId}",
+                arguments = listOf(navArgument("advertiserId") {
+                    type = NavType.LongType
+                })
+            ) { backStackEntry ->
+                val advertiserId = backStackEntry.arguments?.getLong("advertiserId") ?: 0
+                AdvertiserProfileControlScreen(
+                    navController = navController,
+                    advertiserId = advertiserId
                 )
             }
         }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.Output
 import androidx.compose.material3.Icon
@@ -22,16 +21,15 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.marketing.enums.ProfileMode
-import com.example.marketing.viewmodel.InfluencerProfileControlViewModel
+import com.example.marketing.viewmodel.AdvertiserProfileControlViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun InfluencerProfileControlScreen(
-    viewModel: InfluencerProfileControlViewModel = hiltViewModel(),
+fun AdvertiserProfileControlScreen(
+    viewModel: AdvertiserProfileControlViewModel = hiltViewModel(),
     navController: NavController,
-    influencerId: Long
+    advertiserId: Long
 ) {
-
     // ------------🔃 status ------------
     val profileMode by viewModel.profileMode.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -40,16 +38,15 @@ fun InfluencerProfileControlScreen(
     val profileInfo by viewModel.profileInfo.collectAsState()
 
     // ----------- 🔭 Launched Effect -------------
-    LaunchedEffect(profileMode, influencerId) {
+    LaunchedEffect(profileMode, advertiserId) {
         if (profileMode == ProfileMode.INIT) {
-            viewModel.updateInfluencerId(influencerId)    // have your VM advance mode to READ_ONLY
-            viewModel.fetchProfileInfo()    // this can be suspend or non-suspend
+            viewModel.updateAdvertiserId(advertiserId)    // have your VM advance mode to READ_ONLY
+            viewModel.fetchProfileInfo()    // this is suspend function : sync
         }
     }
 
     when(profileMode) {
         ProfileMode.INIT -> {
-            // showing indicator
         }
 
         ProfileMode.READ_ONLY -> {
@@ -74,9 +71,6 @@ fun InfluencerProfileControlScreen(
                     )
                 }
 
-                InfluencerProfileScreen(
-                    initProfileInfo = profileInfo!! //📌 after fetch (always_
-                )
 
                 IconButton(
                     modifier = Modifier
@@ -96,38 +90,17 @@ fun InfluencerProfileControlScreen(
                         contentDescription = "influencer logout"
                     )
                 }
+
+                AdvertiserProfileScreen(
+                    navController = navController,
+                    profileInfo = profileInfo!!
+                )
             }
         }
 
         ProfileMode.EDIT -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                IconButton( // 😎 오 이렇게 두면 상단 고정되네 ??
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                        .zIndex(5f),
-                    onClick = {
-                        viewModel.updateProfileMode(ProfileMode.READ_ONLY)
-                    },
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(24.dp),
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = "profile info edit save"
-                    )
-                }
 
-
-                InfluencerProfileEditScreen(
-                    initProfileInfo = profileInfo!! //📌 after fetch (always_
-                )
-
-
-            }
         }
     }
+
 }

@@ -1,11 +1,11 @@
 package com.example.marketing.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.marketing.domain.InfluencerJoinedProfileInfo
+import com.example.marketing.domain.AdvertiserProfileInfo
 import com.example.marketing.domain.InfluencerProfileImage
 import com.example.marketing.enums.ProfileMode
+import com.example.marketing.repository.AdvertiserRepository
 import com.example.marketing.repository.AuthRepository
-import com.example.marketing.repository.InfluencerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,35 +14,35 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class InfluencerProfileControlViewModel @Inject constructor(
-    private val influencerRepository: InfluencerRepository,
-    private val authRepository: AuthRepository,
+class AdvertiserProfileControlViewModel @Inject constructor(
+    private val advertiserRepository: AdvertiserRepository,
+    private val authRepository: AuthRepository
 ): ViewModel() {
     // ------------⛏️️ init value -------------
-    private val _influencerId = MutableStateFlow<Long?> (null)
-    val influencerId = _influencerId.asStateFlow()
+    private val _advertiserId = MutableStateFlow<Long?> (null)
+    val advertiserId = _advertiserId.asStateFlow()
 
     // ------------🔃 status ------------
     private val _profileMode = MutableStateFlow (ProfileMode.INIT)
     val profileMode = _profileMode.asStateFlow()
 
     // ----------- 🚀 from server value -----------
-    private val _profileInfo = MutableStateFlow<InfluencerJoinedProfileInfo?> (null)
+    private val _profileInfo = MutableStateFlow<AdvertiserProfileInfo?> (null)
     val profileInfo = _profileInfo.asStateFlow()
 
     private val _imageMetaData = MutableStateFlow<InfluencerProfileImage?>(null)
 
 
     // ----------- 🎮 update function-------------
-    fun updateInfluencerId(id: Long) = run {
-        _influencerId.value = id
+    fun updateAdvertiserId(id: Long) = run {
+        _advertiserId.value = id
     }
 
     fun updateProfileMode(mode: ProfileMode) = run {
         _profileMode.value = mode
     }
 
-    private fun updateProfileInfo(info: InfluencerJoinedProfileInfo) = run {
+    private fun updateProfileInfo(info: AdvertiserProfileInfo) = run {
         _profileInfo.value = info
     }
 
@@ -50,19 +50,20 @@ class InfluencerProfileControlViewModel @Inject constructor(
         authRepository.clearToken()
     }
 
-
     // ----------- 🛜 API -----------------------
     suspend fun fetchProfileInfo()  {
-        withContext(Dispatchers.IO) {
-            if (_influencerId.value != null) {
-                val domain = influencerRepository.fetchProfileInfo(_influencerId.value!!)
-                    ?: return@withContext
+        if (_advertiserId.value != null) {
+            withContext(Dispatchers.IO) {
+                val profile = advertiserRepository.fetchProfileInfo(_advertiserId.value!!)
 
-                withContext(Dispatchers.Main) {
-                    updateProfileInfo(domain)
-                    _profileMode.value = ProfileMode.READ_ONLY
+                if (profile != null) {
+                    withContext(Dispatchers.Main) {
+                        updateProfileInfo(profile)
+                        _profileMode.value = ProfileMode.READ_ONLY
+                    }
                 }
             }
         }
+
     }
 }

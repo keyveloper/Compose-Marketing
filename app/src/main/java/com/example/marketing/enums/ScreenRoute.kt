@@ -22,6 +22,6 @@ enum class ScreenRoute(val route: String) {
     MAIN_HOME("main-home"),
     MAIN_GOLDEN("golden"),
     MAIN_HOME_AD_DETAIL("home-ad-detail"),
-    MAIN_PROFILE_INFLUENCER_EDIT("profile-influencer-edit")
-    
+    MAIN_PROFILE_INFLUENCER("main-profile-influencer"),
+    MAIN_PROFILE_ADVERTISER("main-profile-advertiser")
 }
