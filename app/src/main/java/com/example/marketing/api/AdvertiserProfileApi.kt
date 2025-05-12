@@ -1,6 +1,8 @@
 package com.example.marketing.api
 
 import com.example.marketing.dao.JwtTokenDao
+import com.example.marketing.dto.board.response.GetOwnedExpiredAdvertisementsResponse
+import com.example.marketing.dto.board.response.GetOwnedLiveAdvertisementsResponse
 import com.example.marketing.dto.user.request.MakeNewAdvertiserProfileInfoRequest
 import com.example.marketing.dto.user.request.SaveAdvertiserProfileInfo
 import com.example.marketing.dto.user.response.GetAdvertiserProfileResponse
@@ -34,6 +36,18 @@ class AdvertiserProfileApi @Inject constructor(
 
             bearerAuth(token)
         }.body()
+    }
+
+    suspend fun fetchLiveAdvertisements(
+        advertiserId: Long
+    ): GetOwnedLiveAdvertisementsResponse {
+        return httpClient.get("/open/advertiser/profile/live-ads/$advertiserId").body()
+    }
+
+    suspend fun fetchExpiredAdvertisements(
+        advertiserId: Long
+    ): GetOwnedExpiredAdvertisementsResponse {
+        return httpClient.get("/open/advertiser/profile/expired-ads/$advertiserId").body()
     }
 }
 

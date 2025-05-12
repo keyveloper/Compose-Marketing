@@ -167,7 +167,6 @@ fun InfluencerProfileScreen(
                 }
             }
             // Add more UI content...
-
             item {
                 // user introduction & url ...
                 Box(
@@ -198,7 +197,7 @@ fun InfluencerProfileScreen(
                                 .height(250.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = Color(0x070707),
+                                    color = Color(0x07070707),
                                     shape = RoundedCornerShape(3.dp) // optional rounded corners
                                 )
                                 .padding(16.dp) // give inner content some breathing room

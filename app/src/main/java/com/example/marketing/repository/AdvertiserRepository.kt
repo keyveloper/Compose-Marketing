@@ -7,6 +7,7 @@ import android.util.Log
 import com.example.marketing.api.AdvertiserApi
 import com.example.marketing.api.AdvertiserImageApi
 import com.example.marketing.api.AdvertiserProfileApi
+import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.domain.AdvertiserProfileImage
 import com.example.marketing.domain.AdvertiserProfileInfo
 import com.example.marketing.dto.user.request.LoginAdvertiser
@@ -106,6 +107,26 @@ class AdvertiserRepository @Inject constructor(
             null
         } else {
             response.result
+        }
+    }
+
+    suspend fun fetchLiveAdvertisements(advertiserId: Long): List<AdvertisementPackage> {
+        val response = advertiserProfileApi.fetchLiveAdvertisements(advertiserId)
+
+        return if (response.frontErrorCode != 20000) {
+            listOf()
+        } else {
+            response.packages
+        }
+    }
+
+    suspend fun fetchExpiredAdvertisements(advertiserId: Long): List<AdvertisementPackage> {
+        val response = advertiserProfileApi.fetchExpiredAdvertisements(advertiserId)
+
+        return if (response.frontErrorCode != 20000) {
+            listOf()
+        } else {
+            response.packages
         }
     }
 }

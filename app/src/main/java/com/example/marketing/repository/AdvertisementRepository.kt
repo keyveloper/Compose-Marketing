@@ -1,9 +1,5 @@
 package com.example.marketing.repository
 
-import android.content.ContentResolver
-import android.content.Context
-import android.net.Uri
-import android.provider.OpenableColumns
 import android.util.Log
 import com.example.marketing.api.AdvertisementApi
 import com.example.marketing.api.AdvertisementDraftApi
@@ -12,11 +8,7 @@ import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.dto.board.request.AdvertisementWithKeyword
 import com.example.marketing.dto.board.request.SaveAdvertisementDelivery
 import com.example.marketing.dto.board.request.SaveAdvertisementGeneral
-import com.example.marketing.dto.board.request.SaveAdvertisementImageMetadata
-import com.example.marketing.dto.board.response.MakeNewAdvertisementImageResult
 import com.example.marketing.enums.ReviewType
-import com.example.marketing.exception.BusinessException
-import com.example.marketing.ui.component.AdvertisementThumbnailItem
 import javax.inject.Inject
 
 class AdvertisementRepository @Inject constructor(
@@ -55,5 +47,4 @@ class AdvertisementRepository @Inject constructor(
             null
         } else response.advertisement
     }
-
 }
