@@ -88,7 +88,9 @@ fun MainScreen(
                         .fillMaxSize()
                         .background(Color.White)
                     ,
-                    navController = navController
+                    navController = navController,
+                    userId = userId,
+                    userType = userType.value
                 )
             }
 
@@ -96,7 +98,7 @@ fun MainScreen(
                 when (userType.value) {
                     UserType.INFLUENCER -> {
                         navController.navigate(
-                            ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/$userId")
+                            ScreenRoute.MAIN_PROFILE_INFLUENCER.route + "/$userId")
                     }
 
                     UserType.ADVERTISER_COMMON -> {

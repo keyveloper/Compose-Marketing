@@ -83,7 +83,7 @@ fun VerticalAdvertisementThumbnail(
         Column {
             // Image tmp -> should change to coil
             if (item.unifiedCode != null) {
-                val url = "http://192.168.223.89:8080/open/advertisement/image/${item.unifiedCode}"
+                val url = "http://192.168.229.89:8080/open/advertisement/image/${item.unifiedCode}"
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(url)

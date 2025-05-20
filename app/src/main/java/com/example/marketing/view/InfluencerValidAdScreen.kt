@@ -105,7 +105,7 @@ fun InfluencerValidAdScreen(
                         val uuid = offerInfo.thumbnailUrl?.substringAfterLast('/')
 
                         if (uuid != null) {
-                            val url = "http://192.168.223.89:8080/open/advertisement/image/${uuid}"
+                            val url = "http://192.168.100.89:8080/open/advertisement/image/${uuid}"
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(url)
@@ -136,7 +136,7 @@ fun InfluencerValidAdScreen(
                         val uuid = offerInfo.thumbnailUrl?.substringAfterLast('/')
 
                         if (uuid != null) {
-                            val url = "http://192.168.223.89:8080/open/advertisement/image/${uuid}"
+                            val url = "http://192.168.100.89:8080/open/advertisement/image/${uuid}"
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(url)
@@ -162,7 +162,7 @@ fun InfluencerValidAdScreen(
                         val uuid = offerInfo.thumbnailUrl?.substringAfterLast('/')
 
                         if (uuid != null) {
-                            val url = "http://192.168.223.89:8080/open/advertisement/image/${uuid}"
+                            val url = "http://192.168.100.89:8080/open/advertisement/image/${uuid}"
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .data(url)

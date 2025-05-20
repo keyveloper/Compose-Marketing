@@ -28,7 +28,6 @@ fun InfluencerFavoriteAdScreen(
     viewModel: InfluencerFavoriteAdViewModel = hiltViewModel(),
     navController: NavController
 ) {
-
     // ----------- 🚀 api value -----------
     val favoriteAdItems by viewModel.favoriteAdItems.collectAsState()
 
@@ -36,7 +35,6 @@ fun InfluencerFavoriteAdScreen(
     LaunchedEffect(Unit) {
         viewModel.fetchFavoriteAds()
     }
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -46,9 +44,8 @@ fun InfluencerFavoriteAdScreen(
         ) {
             items(favoriteAdItems.size) { index ->
                 val item = favoriteAdItems[index]
-
                 val uuid = item.thumbnailUrl.substringAfterLast('/')
-                val url = "http://192.168.223.89:8080/open/advertisement/image/${uuid}"
+                val url = "http://192.168.100.89:8080/open/advertisement/image/${uuid}"
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(url)

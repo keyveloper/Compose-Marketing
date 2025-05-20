@@ -1,14 +1,10 @@
 package com.example.marketing.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -26,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.marketing.enums.FavoriteViewStatus
+import com.example.marketing.enums.UserType
 import com.example.marketing.ui.color.SeaGreen
 import com.example.marketing.viewmodel.FavoriteViewModel
 
@@ -33,7 +30,9 @@ import com.example.marketing.viewmodel.FavoriteViewModel
 fun FavoriteScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoriteViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    userId: Long,
+    userType: UserType
 ) {
     // ----------- 📌 fixed ---------
     val tabs = listOf(

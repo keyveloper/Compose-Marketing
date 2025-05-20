@@ -7,6 +7,8 @@ data class AdvertisementGeneralFields(
     val id: Long,
     val title: String,
     val reviewType: ReviewType,
+    val advertiserId: Long,
+    val advertiserLoginId: String,
     val channelType: ChannelType,
     val recruitmentNumber: Int,
     val itemName: String,

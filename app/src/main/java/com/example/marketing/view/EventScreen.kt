@@ -152,14 +152,14 @@ fun EventScreen(
                 EventStatus.FRESH -> {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "😎 오늘 올라온 광고를 확인하세요",
+                        text = "🍉 오늘 오픈",
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
                 EventStatus.DEADLINE -> {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "⌛ 이런...! 모집 시간이 얼마 남지 않았어요",
+                        text = "⌛ 마감임박",
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
@@ -197,13 +197,12 @@ fun EventScreen(
                             onClick = { selectedThumb ->
                                 navController.navigate(
                                     ScreenRoute.MAIN_HOME_AD_DETAIL.route +
-                                            "/${selectedThumb.advertisementId}"
+                                            "/${selectedThumb.advertisementId}/${userType.name}"
                                 )
                             },
                             onToggleFavorite = {
                                 viewModel.favorite(advertisementId = thumb.advertisementId)
                             },
-
                         )
                     } else {
                         VerticalAdvertisementThumbnail(
@@ -211,7 +210,7 @@ fun EventScreen(
                             onClick = { selectedThumb ->
                                 navController.navigate(
                                     ScreenRoute.MAIN_HOME_AD_DETAIL.route +
-                                            "/${selectedThumb.advertisementId}"
+                                            "/${selectedThumb.advertisementId}/${userType.name}"
                                 )
                             },
                             onToggleFavorite = {

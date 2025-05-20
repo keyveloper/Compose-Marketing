@@ -24,9 +24,7 @@ fun AuthHealthCheckScreen(
         }
     }
 
-
     LaunchedEffect(loginStatus.value) {
-
         if (loginStatus.value) { // login
             navController.navigate(
                 ScreenRoute.MAIN_INIT.route +

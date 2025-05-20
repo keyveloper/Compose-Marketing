@@ -93,3 +93,9 @@ val Sandalwood       = Color(0xFFD9B48F) // soft tan
 val SageGreen        = Color(0xFFB5CDA3) // muted herb green
 val WinterMint       = Color(0xFFBDF8E4) // frosty mint
 
+
+// primary
+val ClassicBlue      = Color(0xFF0F4C81)
+val SkyWashBlue      = Color(0xFF5A7FA3)
+val MidnightNavy     = Color(0xFF0A2342)
+val SunnyAmber       = Color(0xFFFFCA3A)

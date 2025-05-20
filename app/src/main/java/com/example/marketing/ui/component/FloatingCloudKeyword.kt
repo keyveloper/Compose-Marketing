@@ -75,7 +75,6 @@ fun FloatingKeywordCloud(
             .then(gestureModifier)          // attach gestures
     ) {
         candidatesInfo.forEachIndexed { idx, candidate ->
-
             // ① Golden‑angle in radians  (≈ 137.5°)
             val goldenAngle = PI * (3.0 - sqrt(5.0))          // Double
             val baseAngle   = idx * goldenAngle               // Double
