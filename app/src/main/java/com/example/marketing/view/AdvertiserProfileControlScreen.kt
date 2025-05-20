@@ -28,7 +28,6 @@ import kotlinx.coroutines.launch
 fun AdvertiserProfileControlScreen(
     viewModel: AdvertiserProfileControlViewModel = hiltViewModel(),
     navController: NavController,
-    advertiserId: Long
 ) {
     // ------------🔃 status ------------
     val profileMode by viewModel.profileMode.collectAsState()
@@ -38,9 +37,8 @@ fun AdvertiserProfileControlScreen(
     val profileInfo by viewModel.profileInfo.collectAsState()
 
     // ----------- 🔭 Launched Effect -------------
-    LaunchedEffect(profileMode, advertiserId) {
+    LaunchedEffect(Unit) {
         if (profileMode == ProfileMode.INIT) {
-            viewModel.updateAdvertiserId(advertiserId)    // have your VM advance mode to READ_ONLY
             viewModel.fetchProfileInfo()    // this is suspend function : sync
         }
     }

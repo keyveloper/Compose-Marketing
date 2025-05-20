@@ -92,7 +92,7 @@ fun FavoriteScreen(
                 }
 
                 FavoriteViewStatus.FOLLOW -> {
-                    Text("TL")
+
                 }
 
                 else -> {

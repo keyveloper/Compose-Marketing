@@ -234,7 +234,7 @@ fun AdvertisementDetailScreen(
                                 .clickable {
                                     navController.navigate(
                                         ScreenRoute.MAIN_PROFILE_ADVERTISER.route +
-                                        "/${generalField.advertiserId}"
+                                        "/${generalField.advertiserId}/${userType}"
                                     )
                                 },
                             text = "@${generalField.advertiserLoginId}",

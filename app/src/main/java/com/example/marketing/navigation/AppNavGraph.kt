@@ -142,15 +142,14 @@ fun AppNavGraph(
 
 
             composable(
-                route = ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/{advertiserId}",
-                arguments = listOf(navArgument("advertiserId") {
-                    type = NavType.LongType
-                })
+                route = ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/{advertiserId}/{userType}",
+                arguments = listOf(
+                    navArgument("advertiserId") { type = NavType.LongType },
+                    navArgument("userType") { type = NavType.StringType }
+                )
             ) { backStackEntry ->
-                val advertiserId = backStackEntry.arguments?.getLong("advertiserId") ?: 0
                 AdvertiserProfileControlScreen(
                     navController = navController,
-                    advertiserId = advertiserId
                 )
             }
         }

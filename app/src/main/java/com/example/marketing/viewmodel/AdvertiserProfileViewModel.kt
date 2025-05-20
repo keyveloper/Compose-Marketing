@@ -1,21 +1,27 @@
 package com.example.marketing.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.domain.AdvertiserProfileInfo
+import com.example.marketing.dto.functions.request.FollowAdvertiser
 import com.example.marketing.enums.AdvertiserProfileAdMode
 import com.example.marketing.enums.ApiCallStatus
+import com.example.marketing.enums.FollowStatus
 import com.example.marketing.repository.AdvertiserRepository
+import com.example.marketing.repository.FollowRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class AdvertiserProfileViewModel @Inject constructor(
-    private val advertiserProfileRepository: AdvertiserRepository
+    private val advertiserProfileRepository: AdvertiserRepository,
+    private val followRepository: FollowRepository
 ): ViewModel() {
     // ------------ ⛏️ init -------------
     private val _profileInfo = MutableStateFlow<AdvertiserProfileInfo?> (null)
@@ -28,6 +34,8 @@ class AdvertiserProfileViewModel @Inject constructor(
     private val _adMode = MutableStateFlow(AdvertiserProfileAdMode.LIVE)
     val adMode = _adMode.asStateFlow()
 
+    private val _followStatus = MutableStateFlow(FollowStatus.UNFOLLOW)
+    val followStatus = _followStatus.asStateFlow()
 
     // ----------- 🚀 from server value -----------
     private val _livePackages = MutableStateFlow<List<AdvertisementPackage>>( listOf() )
@@ -84,6 +92,20 @@ class AdvertiserProfileViewModel @Inject constructor(
 
                 withContext(Dispatchers.Main) {
                     updateExpiredPackages(packages)
+                }
+            }
+        }
+    }
+
+    fun follow() = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            val result = followRepository.follow(
+                FollowAdvertiser.of(_profileInfo.value!!.advertiserId)
+            )
+
+            if (result != null) {
+                withContext(Dispatchers.Main) {
+                    _followStatus.value = result.followStatus
                 }
             }
         }

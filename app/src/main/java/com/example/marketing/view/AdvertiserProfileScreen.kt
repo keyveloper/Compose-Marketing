@@ -1,9 +1,8 @@
 package com.example.marketing.view
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,7 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,11 +31,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,7 +45,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -56,20 +53,15 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.example.marketing.domain.AdvertisementPackage
 import com.example.marketing.domain.AdvertiserProfileInfo
 import com.example.marketing.enums.AdvertiserProfileAdMode
-import com.example.marketing.enums.ChannelIcon
+import com.example.marketing.enums.FollowStatus
 import com.example.marketing.enums.ScreenRoute
-import com.example.marketing.ui.color.PastelPea
-import com.example.marketing.ui.color.PastelSkyBlue
-import com.example.marketing.ui.color.SeaFoam
+import com.example.marketing.ui.color.ClassicBlue
 import com.example.marketing.ui.color.SeaGreen
 import com.example.marketing.ui.component.AdvertisementThumbnailItem
 import com.example.marketing.ui.component.VerticalAdvertisementThumbnail
 import com.example.marketing.viewmodel.AdvertiserProfileViewModel
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
@@ -80,6 +72,7 @@ fun AdvertiserProfileScreen(
 ) {
     // ------------🔃 status ------------
     val adMode by viewModel.adMode.collectAsState()
+    val followStatic by viewModel.followStatus.collectAsState()
 
     // ----------- 🚀 api value -----------
     val baseUrl = "http://192.168.247.89:8080/open/advertiser/image/profile"
@@ -168,25 +161,62 @@ fun AdvertiserProfileScreen(
                 .border(2.dp, Color.White, CircleShape)
         )
 
-        Button(
-            onClick = { /* follow */ },
-            modifier = Modifier
-                .width(84.dp)
-                .height(48.dp)
-                .align(Alignment.TopEnd)
-                .offset {
-                    IntOffset(
-                        x = with(density) { (-16).dp.toPx() }.toInt(),
-                        y = with(density) { (animatedHeight + 10.dp).toPx() }.toInt()
-                    )
-                },
-            shape = RoundedCornerShape(24.dp)
-        ) {
-            Text(
-                text = "구독",
-                style = MaterialTheme.typography.labelLarge,
-                maxLines = 1
-            )
+        if (followStatic == FollowStatus.UNFOLLOW) {
+            Button(
+                onClick = { viewModel.follow() },
+                modifier = Modifier
+                    .width(84.dp)
+                    .height(48.dp)
+                    .align(Alignment.TopEnd)
+                    .offset {
+                        IntOffset(
+                            x = with(density) { (-16).dp.toPx() }.toInt(),
+                            y = with(density) { (animatedHeight + 10.dp).toPx() }.toInt()
+                        )
+                    },
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonColors(
+                    contentColor = Color.White,
+                    containerColor = ClassicBlue,
+                    disabledContentColor = Color.White,
+                    disabledContainerColor = Color.Gray
+                )
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = "구독",
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
+                )
+            }
+        } else {
+            Button(
+                onClick = { viewModel.follow() },
+                modifier = Modifier
+                    .width(92.dp)
+                    .height(48.dp)
+                    .align(Alignment.TopEnd)
+                    .offset {
+                        IntOffset(
+                            x = with(density) { (-16).dp.toPx() }.toInt(),
+                            y = with(density) { (animatedHeight + 10.dp).toPx() }.toInt()
+                        )
+                    },
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonColors(
+                    contentColor = Color.Black,
+                    containerColor = Color.Gray,
+                    disabledContentColor = Color.White,
+                    disabledContainerColor = Color.Gray
+                )
+            ) {
+                Text(
+                    modifier = Modifier,
+                    text = "구독중",
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = 1
+                )
+            }
         }
 
         LazyColumn(
@@ -322,38 +352,45 @@ fun AdvertiserProfileScreen(
 
             items(displayedPackages.chunked(2)) { pkgs ->
                 // advertisement...
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .defaultMinSize(minHeight = 200.dp)
-                        .padding(horizontal = 8.dp, vertical = 16.dp)
-                    ,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .heightIn(min = 300.dp)
                 ) {
-                     pkgs.forEach { pkg ->
-                         val thumbItem = AdvertisementThumbnailItem.of(
-                             generalFields = pkg.advertisementGeneralFields,
-                             unifiedCode =
-                             pkg.advertisementGeneralFields
-                                 .thumbnailUri?.substringAfterLast('/')
-                         )
-                         VerticalAdvertisementThumbnail(
-                             item = thumbItem,
-                             onClick = { selectedThumb ->
-                                 navController.navigate(
-                                     ScreenRoute.MAIN_HOME_AD_DETAIL.route +
-                                             "/${selectedThumb.advertisementId}"
-                                 )
-                             },
-                             onToggleFavorite = {}
-                         )
-                     }
-                    // Fill empty space if only 1 item in last row
-                    if (pkgs.size < 2) {
-                        Spacer(modifier = Modifier.weight(1f))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .defaultMinSize(minHeight = 200.dp)
+                            .padding(horizontal = 8.dp, vertical = 16.dp)
+                        ,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        pkgs.forEach { pkg ->
+                            val thumbItem = AdvertisementThumbnailItem.of(
+                                generalFields = pkg.advertisementGeneralFields,
+                                unifiedCode =
+                                pkg.advertisementGeneralFields
+                                    .thumbnailUri?.substringAfterLast('/')
+                            )
+                            VerticalAdvertisementThumbnail(
+                                item = thumbItem,
+                                onClick = { selectedThumb ->
+                                    navController.navigate(
+                                        ScreenRoute.MAIN_HOME_AD_DETAIL.route +
+                                                "/${selectedThumb.advertisementId}"
+                                    )
+                                },
+                                onToggleFavorite = {}
+                            )
+                        }
+                        // Fill empty space if only 1 item in last row
+                        if (pkgs.size < 2) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
                 }
+
             }
         }
 

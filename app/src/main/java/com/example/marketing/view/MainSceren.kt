@@ -103,7 +103,7 @@ fun MainScreen(
 
                     UserType.ADVERTISER_COMMON -> {
                         navController.navigate(
-                            ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/$userId"
+                            ScreenRoute.MAIN_PROFILE_ADVERTISER.route + "/$userId/$userType"
                         )
                     }
 
