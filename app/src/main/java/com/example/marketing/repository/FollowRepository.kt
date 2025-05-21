@@ -2,6 +2,7 @@ package com.example.marketing.repository
 
 import com.example.marketing.api.FollowApi
 import com.example.marketing.domain.AdvertisementPackage
+import com.example.marketing.domain.FollowFeedItem
 import com.example.marketing.dto.functions.request.FollowAdvertiser
 import com.example.marketing.dto.functions.response.FollowAdvertiserResult
 import javax.inject.Inject
@@ -19,13 +20,18 @@ class FollowRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchAdsByInfluencerId(): List<AdvertisementPackage> {
+    suspend fun fetchAdsByInfluencerId(): List<FollowFeedItem> {
         val response = followApi.fetchAdsByInfluencerId()
 
-        return if(response.frontErrorCode != 20000) {
+        return if (response.frontErrorCode != 20000) {
             listOf()
         } else {
-            response.packages
+            response.packages.map {
+                FollowFeedItem.of(
+                    it.advertisementPackage.advertisementGeneralFields,
+                    it.advertiserSummaryInfo
+                )
+            }
         }
     }
 }

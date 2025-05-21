@@ -48,8 +48,7 @@ fun HomeScreen(
                 .height(56.dp)
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),
-            onHomeBarSelected = { selectedStatus ->  viewModel.changeState(selectedStatus)
-            }
+            onHomeBarSelected = { selectedStatus ->  viewModel.changeState(selectedStatus) }
         )
 
         // content Screen Box

@@ -92,7 +92,9 @@ fun FavoriteScreen(
                 }
 
                 FavoriteViewStatus.FOLLOW -> {
-
+                     InfluencerFollowingScreen(
+                        navController = navController
+                    )
                 }
 
                 else -> {

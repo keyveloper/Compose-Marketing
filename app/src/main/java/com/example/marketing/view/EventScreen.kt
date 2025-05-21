@@ -159,7 +159,7 @@ fun EventScreen(
                 EventStatus.DEADLINE -> {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "⌛ 마감임박",
+                        text = "⌛ 마감 임박",
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
@@ -167,7 +167,7 @@ fun EventScreen(
                 EventStatus.HOT -> {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "🔥 요즘은 이런 광고가 인기있어요",
+                        text = "🔥 인기 있는",
                         style = MaterialTheme.typography.titleLarge
                     )
                 }

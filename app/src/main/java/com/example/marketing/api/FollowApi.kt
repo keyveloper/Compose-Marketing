@@ -4,7 +4,7 @@ import com.example.marketing.dao.JwtTokenDao
 import com.example.marketing.dto.functions.request.FollowAdvertiser
 import com.example.marketing.dto.functions.request.FollowAdvertiserRequest
 import com.example.marketing.dto.functions.response.FollowAdvertiserResponse
-import com.example.marketing.dto.functions.response.GetFollowingAdsResponse
+import com.example.marketing.dto.functions.response.GetFollowingAdsWithAdvertiserInfoResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.bearerAuth
@@ -32,10 +32,10 @@ class FollowApi @Inject constructor(
         }.body()
     }
 
-    suspend fun fetchAdsByInfluencerId(): GetFollowingAdsResponse {
+    suspend fun fetchAdsByInfluencerId(): GetFollowingAdsWithAdvertiserInfoResponse {
         val token = jwtTokenDao.observeToken().firstOrNull()?.token ?: ""
 
-        return httpClient.get("/follow/advertisements") {
+        return httpClient.get("/follow/advertisements/advertisers") {
             bearerAuth(token)
         }.body()
     }
