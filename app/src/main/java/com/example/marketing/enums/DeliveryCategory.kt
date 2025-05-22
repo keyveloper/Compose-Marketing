@@ -15,5 +15,8 @@ enum class DeliveryCategory(val code: Int) {
         val codeMap: Map<Int, DeliveryCategory> = entries.associateBy { it.code }
 
         fun fromCode(code: Int): DeliveryCategory? = codeMap[code]
+
+        val actualCategories: List<DeliveryCategory>
+            get() = entries.filterNot { it == ALL }
     }
 }

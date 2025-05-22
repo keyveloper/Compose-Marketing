@@ -67,7 +67,11 @@ fun HomeScreen(
                 }
                 
                 HomeScreenStatus.Delivery -> {
-                    // DeliveryScreen()
+                    DeliveryScreen(
+                        navController = navController,
+                        userId = userId,
+                        userType = userType
+                    )
                 }
 
                 HomeScreenStatus.Type -> {

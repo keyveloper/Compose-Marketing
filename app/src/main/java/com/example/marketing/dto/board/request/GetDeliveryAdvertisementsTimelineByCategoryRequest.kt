@@ -6,18 +6,17 @@ import com.example.marketing.enums.TimelineDirection
 data class GetDeliveryAdvertisementsTimelineByCategoryRequest(
     val pivotTime: Long,
     val timelineDirection: TimelineDirection,
-    val deliveryCategory: DeliveryCategory
+    val deliveryCategories: List<DeliveryCategory>
 ) {
     companion object {
         fun of(
-            requestModel: GetAllDeliveriesTimelineByCategory
+            requestModel: GetDeliveryAdvertisementsTimelineByCategory
         ): GetDeliveryAdvertisementsTimelineByCategoryRequest {
             return GetDeliveryAdvertisementsTimelineByCategoryRequest(
                 pivotTime = requestModel.pivotTime,
                 timelineDirection = requestModel.timelineDirection,
-                deliveryCategory = requestModel.deliveryCategory
+                deliveryCategories = requestModel.deliveryCategories
             )
         }
     }
 }
-

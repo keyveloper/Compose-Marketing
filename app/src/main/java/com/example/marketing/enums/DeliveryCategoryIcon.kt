@@ -12,6 +12,13 @@ enum class DeliveryCategoryIcon(
     val toKorean: String,
     val contentDescription: String,
 ) {
+    ALL(
+        -1,
+        Icons.Default.DoneAll,
+        "☑️",
+        "전체",
+        "전체 카테고리"
+    ),
     LIFE(
         0,
         Icons.Default.LocalLaundryService,

@@ -38,7 +38,7 @@ class EventViewModel @Inject constructor(
     // ------------✍️ input value -------------
 
     // ------------🔃 status ------------
-    private val _eventStatus = MutableStateFlow ( EventStatus.IDLE )
+    private val _eventStatus = MutableStateFlow ( EventStatus.FRESH )
     val eventStatus: StateFlow<EventStatus> = _eventStatus.asStateFlow()
 
     private val _freshCallStatus = MutableStateFlow ( ApiCallStatus.IDLE )

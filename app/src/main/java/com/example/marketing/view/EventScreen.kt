@@ -111,8 +111,8 @@ fun EventScreen(
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     CategoryBox(
-                        emoji = "🔥",
-                        eventStatus = EventStatus.HOT,
+                        emoji = "🍎",
+                        eventStatus = EventStatus.FRESH,
                         icon = {},
                         onCategorySelected = { status ->
                             viewModel.updateEventStatus(status)
@@ -121,14 +121,6 @@ fun EventScreen(
                     CategoryBox(
                         emoji = "☠️",
                         eventStatus = EventStatus.DEADLINE,
-                        icon = {},
-                        onCategorySelected = { status ->
-                            viewModel.updateEventStatus(status)
-                        }
-                    )
-                    CategoryBox(
-                        emoji = "🍎",
-                        eventStatus = EventStatus.FRESH,
                         icon = {},
                         onCategorySelected = { status ->
                             viewModel.updateEventStatus(status)
@@ -164,19 +156,10 @@ fun EventScreen(
                     )
                 }
 
-                EventStatus.HOT -> {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "🔥 인기 있는",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-
                 else -> {
 
                 }
             }
-
 
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -225,22 +208,6 @@ fun EventScreen(
                     Spacer(modifier = Modifier.weight(1f))
                 }
             }
-        }
-    }
-
-    AnimatedVisibility(
-        visible = totalApiCallStatus != ApiCallStatus.SUCCESS,
-        enter = EnterTransition.None,
-        exit = ExitTransition.None
-    ) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                strokeWidth = 4.dp,
-                color = MintCream
-            )
         }
     }
 }

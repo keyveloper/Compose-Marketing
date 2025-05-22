@@ -2,7 +2,7 @@ package com.example.marketing.repository
 
 import com.example.marketing.api.AdvertisementDeliveryApi
 import com.example.marketing.domain.AdvertisementPackage
-import com.example.marketing.dto.board.request.GetAllDeliveriesTimelineByCategory
+import com.example.marketing.dto.board.request.GetDeliveryAdvertisementsTimelineByCategory
 import com.example.marketing.dto.board.request.SaveAdvertisementDelivery
 import com.example.marketing.exception.BusinessException
 import javax.inject.Inject
@@ -22,7 +22,7 @@ class AdvertisementDeliveryRepository @Inject constructor(
 
 
     suspend fun fetchAllTimelineByCategoryAndDirection(
-        requestModel: GetAllDeliveriesTimelineByCategory
+        requestModel: GetDeliveryAdvertisementsTimelineByCategory
     ): List<AdvertisementPackage> {
         val response = advertisementDeliveryApi.fetchAllTimelineByCategoryAndDirection(
             requestModel
