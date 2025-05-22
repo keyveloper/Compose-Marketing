@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
 ): ViewModel() {
-    private val _screenStatus = MutableStateFlow(MainScreenStatus.GOLDEN)
+    private val _screenStatus = MutableStateFlow(MainScreenStatus.HOME)
     val screenStatus: StateFlow<MainScreenStatus> = _screenStatus.asStateFlow()
 
     private val _userType = MutableStateFlow(UserType.INFLUENCER)

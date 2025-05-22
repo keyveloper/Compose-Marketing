@@ -86,7 +86,7 @@ fun FavoriteScreen(
 
             when(favoriteViewStatus) {
                 FavoriteViewStatus.MY_OFFER -> {
-                    InfluencerOwnedAdScreen(
+                    InfluencerParticipatingAdScreen(
                         navController = navController
                     )
                 }
